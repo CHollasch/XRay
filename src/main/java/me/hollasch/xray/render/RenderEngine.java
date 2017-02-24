@@ -14,24 +14,22 @@ import java.util.Properties;
  * @author Connor Hollasch
  * @since Feb 23, 6:20 PM
  */
-public class Render implements Runnable {
+public class RenderEngine implements Runnable {
 
     //==============================================================================================
     // INSTANCE VARIABLES
     //==============================================================================================
 
-    @Getter
-    private final Scene scene;
-    @Getter
-    private final Properties renderProperties;
+    @Getter private final Scene scene;
+    @Getter private final Properties renderProperties;
 
-    @Getter
-    private Vec3[][] renderData;
-    @Getter
-    private boolean isRendering = false;
+    @Getter private Vec3[][] renderData;
+    @Getter private boolean isRendering = false;
 
-    @Getter
-    private long renderDuration;
+    @Getter private long renderDuration;
+
+    @Getter private long samplesNeeded;
+    @Getter private long samplesLeft;
 
     //===============================================
     // Properties
@@ -50,11 +48,11 @@ public class Render implements Runnable {
     // CONSTRUCTORS
     //==============================================================================================
 
-    public Render(final Scene scene) {
+    public RenderEngine(final Scene scene) {
         this(scene, new Properties());
     }
 
-    public Render(final Scene scene, final Properties renderProperties) {
+    public RenderEngine(final Scene scene, final Properties renderProperties) {
         this.scene = scene;
         this.renderProperties = renderProperties;
 
@@ -83,6 +81,9 @@ public class Render implements Runnable {
         this.renderData = new Vec3[width][height];
         long renderStart = System.currentTimeMillis();
 
+        this.samplesNeeded = height * width * this.samples;
+        this.samplesLeft = this.samplesNeeded;
+
         for (int py = height - 1; py >= 0; --py) {
             for (int px = 0; px < width; ++px) {
                 for (int sample = 1; sample <= Math.max(1, this.samples); ++sample) {
@@ -108,10 +109,17 @@ public class Render implements Runnable {
                     this.renderDuration = System.currentTimeMillis() - renderStart;
                 }
 
+                this.samplesLeft -= this.samples;
                 Vec3 color = this.renderData[px][height - 1 - py].divideScalar(Math.max(1, this.samples));
                 color = Vec3.of((float) Math.sqrt(color.getX()), (float) Math.sqrt(color.getY()), (float) Math.sqrt(color.getZ()));
 
                 this.renderData[px][height - 1 - py] = color;
+
+                float percent = (this.samplesLeft / (float) this.samplesNeeded) * 100f;
+
+                if (percent % 1 == 0) {
+                    System.out.println(percent + "% (" + (this.samplesNeeded - this.samplesLeft) + " / " + this.samplesNeeded + ")");
+                }
             }
         }
 
@@ -187,11 +195,11 @@ public class Render implements Runnable {
     //==============================================================================================
 
     public static final BufferedImage renderToImage(Scene scene) {
-        return Render.renderToImage(scene, new Properties());
+        return RenderEngine.renderToImage(scene, new Properties());
     }
 
     public static final BufferedImage renderToImage(Scene scene, Properties renderProperties) {
-        Render render = new Render(scene, renderProperties);
+        RenderEngine render = new RenderEngine(scene, renderProperties);
         render.run();
         return render.writeToImage();
     }

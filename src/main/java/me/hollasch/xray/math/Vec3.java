@@ -142,12 +142,22 @@ public class Vec3 {
         return new Vec3((float) Math.random(), (float) Math.random(), (float) Math.random());
     }
 
-    public static final Vec3 randInUnitSphere() {
+    public static final Vec3 randomInUnitSphere() {
         Vec3 point;
 
         do {
             point = Vec3.rand().multiplyScalar(2.0f).subtract(Vec3.of(1, 1, 1));
         } while (point.lengthSquared() >= 1);
+
+        return point;
+    }
+
+    public static final Vec3 randomInUnitDisk() {
+        Vec3 point;
+
+        do {
+            point = Vec3.rand().multiply(Vec3.of(2, 2, 0)).subtract(Vec3.of(1, 1, 0));
+        } while (point.dot(point) >= 1.0);
 
         return point;
     }

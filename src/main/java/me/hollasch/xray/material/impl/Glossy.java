@@ -24,7 +24,7 @@ public class Glossy extends Material {
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
         Vec3 reflected = reflect(incoming.getDirection().normalize(), collision.getNormal());
 
-        Ray scattered = new Ray(collision.getPoint(), reflected.add(Vec3.randInUnitSphere().multiplyScalar(this.roughness)));
+        Ray scattered = new Ray(collision.getPoint(), reflected.add(Vec3.randomInUnitSphere().multiplyScalar(this.roughness)));
         Vec3 attenuation = this.albedo;
 
         if (scattered.getDirection().dot(collision.getNormal()) > 0) {

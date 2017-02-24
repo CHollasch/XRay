@@ -20,7 +20,7 @@ public class Diffuse extends Material {
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
-        Vec3 target = collision.getPoint().add(collision.getNormal()).add(Vec3.randInUnitSphere());
+        Vec3 target = collision.getPoint().add(collision.getNormal()).add(Vec3.randomInUnitSphere());
 
         Ray scattered = new Ray(collision.getPoint(), target.subtract(collision.getPoint()));
         return new SurfaceInteraction(this.albedo, scattered);
