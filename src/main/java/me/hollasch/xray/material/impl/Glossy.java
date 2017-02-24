@@ -33,8 +33,4 @@ public class Glossy extends Material {
             return null;
         }
     }
-
-    private Vec3 reflect(Vec3 incoming, Vec3 normal) {
-        return incoming.subtract(normal.multiplyScalar(incoming.dot(normal) * 2.0f));
-    }
 }

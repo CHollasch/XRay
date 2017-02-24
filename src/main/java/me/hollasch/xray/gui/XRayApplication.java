@@ -1,6 +1,7 @@
 package me.hollasch.xray.gui;
 
 import me.hollasch.xray.material.impl.Diffuse;
+import me.hollasch.xray.material.impl.Glass;
 import me.hollasch.xray.material.impl.Glossy;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.Sphere;
@@ -20,22 +21,23 @@ import java.util.Properties;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 500;
-    private static final int HEIGHT = 250;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 750;
 
     public static void main(String[] args) throws IOException {
         Scene scene = new Scene(WIDTH, HEIGHT);
 
-        scene.setCameraObject(new Camera(new Vec3(0, 0, 0), new Vec3(-2, -1, -1), new Vec3(4, 0, 0), new Vec3(0, 2, 0)));
+        scene.setCameraObject(new Camera(Vec3.of(-2, 2, 1), Vec3.of(0, 0, -1), Vec3.of(0, 1, 0), 90, (float) WIDTH / HEIGHT));
 
         scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Diffuse(new Vec3(0.8f, 0.3f, 0.3f))));
         scene.getSceneObjects().add(new Sphere(Vec3.of(0, -100.5f, -1), 100, new Diffuse(new Vec3(0.2f, 0.3f, 0.3f))));
 
         scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(Vec3.of(0.8f, 0.6f, 0.2f), .2f)));
-        scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), 0.5f, new Glossy(Vec3.of(0.8f, 0.8f, 0.8f), .05f)));
+        scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), 0.5f, new Glass(1.5f)));
+        scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), -0.45f, new Glass(1.5f)));
 
         Properties renderProperties = new Properties();
-        renderProperties.put("samples", 100);
+        renderProperties.put("samples", 32);
         renderProperties.put("blur_factor", 1.0f);
 
         BufferedImage rendered = Render.renderToImage(scene, renderProperties);

@@ -10,10 +10,10 @@ import me.hollasch.xray.render.Ray;
  */
 public class SurfaceInteraction {
 
-    @Getter private Vec3 attenuation;
-    @Getter private Ray scattered;
+    @Getter private final Vec3 attenuation;
+    @Getter private final Ray scattered;
 
-    public SurfaceInteraction(Vec3 attenuation, Ray scattered) {
+    public SurfaceInteraction(final Vec3 attenuation, final Ray scattered) {
         this.attenuation = attenuation;
         this.scattered = scattered;
     }
