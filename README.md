@@ -5,4 +5,4 @@ Based off of Peter Shirley's [Ray Tracing in One Weekend](https://www.amazon.com
 
 -
 *Example render*:
-![Render](render.png)
+![](https://i.gyazo.com/5733f6b421ddb0e74cbfa5ba79b8e0f4.gif)
