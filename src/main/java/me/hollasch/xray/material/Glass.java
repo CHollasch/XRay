@@ -1,4 +1,4 @@
-package me.hollasch.xray.material.impl;
+package me.hollasch.xray.material;
 
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
@@ -44,7 +44,6 @@ public class Glass extends Material {
         if (refraction != null) {
             reflective_probability = schlick(cosine, this.ior);
         } else {
-            scattered = new Ray(collision.getPoint(), reflected);
             reflective_probability = 1.0f;
         }
 

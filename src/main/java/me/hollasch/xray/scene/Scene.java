@@ -3,6 +3,8 @@ package me.hollasch.xray.scene;
 import lombok.Getter;
 import lombok.Setter;
 import me.hollasch.xray.object.WorldObject;
+import me.hollasch.xray.scene.camera.Camera;
+import me.hollasch.xray.scene.camera.PerspectiveCamera;
 
 import java.util.HashSet;
 import java.util.Set;

@@ -1,4 +1,4 @@
-package me.hollasch.xray.material.impl;
+package me.hollasch.xray.material;
 
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
