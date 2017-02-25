@@ -18,7 +18,7 @@ import java.util.concurrent.Executors;
  * @author Connor Hollasch
  * @since Feb 23, 6:20 PM
  */
-public class Renderer implements Runnable {
+public class Renderer {
 
     //==============================================================================================
     // INSTANCE VARIABLES
@@ -115,39 +115,27 @@ public class Renderer implements Runnable {
     // PUBLIC METHODS
     //==============================================================================================
 
-    // Naming conventions.
     public void render() {
-        run();
-    }
-
-    public void run() {
         if (this.scene.getCameraObject() == null) {
-            throw new RuntimeException("PerspectiveCamera cannot be null for render to start!");
+            throw new RuntimeException("Camera cannot be null for render to start!");
         }
 
-        isRendering = true;
+        this.isRendering = true;
 
-        // We can handle the scene size as our width height combo.
         int width = scene.getScreenWidth();
         int height = scene.getScreenHeight();
-
         this.renderData = new Vec3[width][height];
+
         long renderStart = System.currentTimeMillis();
 
         this.samplesNeeded = height * width * this.samples;
         this.samplesLeft = this.samplesNeeded;
 
         registerProgressListener(new Listener() {
-            @Override
-            public void onPixelFinish(int x, int y, Vec3 color) {
+            // Ignore these, used elsewhere.
+            public void onPixelFinish(int x, int y, Vec3 color) {}
+            public void onTileFinish(TileTracer tracer) {}
 
-            }
-
-            @Override
-            public void onTileFinish(TileTracer tracer) {
-            }
-
-            @Override
             public void onRenderFinish(Vec3[][] finalImage) {
                 // Benchmark render time for final pixel.
                 Renderer.this.renderData = finalImage;
@@ -156,12 +144,12 @@ public class Renderer implements Runnable {
             }
         });
 
-        for (int ty = height - 1; ty >= 0; ty -= this.tileSizeY) {
-            for (int tx = 0; tx < width; tx += this.tileSizeX) {
-                TileTracer t = new TileTracer(this, tx, ty, Math.min(this.tileSizeX, width - tx), Math.min(this.tileSizeY, height - ty));
-                this.threadPool.submit(t);
+        synchronized (this.tracersLeft) {
+            for (int ty = height; ty >= 0; ty -= this.tileSizeY) {
+                for (int tx = 0; tx < width; tx += this.tileSizeX) {
+                    TileTracer t = new TileTracer(this, tx, ty, Math.min(this.tileSizeX, width - tx), Math.min(this.tileSizeY, height - ty));
+                    this.threadPool.submit(t);
 
-                synchronized (this.tracersLeft) {
                     this.tracersLeft.add(t);
                 }
             }
@@ -173,22 +161,13 @@ public class Renderer implements Runnable {
     }
 
     public Vec3 getColorAt(int x, int y) {
-        Vec3 totalColor = Vec3.of(0f, 0f, 0f);
+        Vec3 totalColor;
 
-        for (int sample = 1; sample <= Math.max(1, this.samples); ++sample) {
-            float u = (float) (x + (Math.random() * this.blurFactor)) / this.getScene().getScreenWidth();
-            float v = (float) (y + (Math.random() * this.blurFactor)) / this.getScene().getScreenHeight();
+        float u = (float) (x + (Math.random() * this.blurFactor)) / this.getScene().getScreenWidth();
+        float v = (float) (y + (Math.random() * this.blurFactor)) / this.getScene().getScreenHeight();
 
-            if (this.samples <= 0) {
-                u = (float) (x) / this.getScene().getScreenWidth();
-                v = (float) (y) / this.getScene().getScreenHeight();
-            }
-
-            Ray ray = this.getScene().getCameraObject().projectRay(u, v);
-            totalColor = totalColor.add(this.getColorAt(ray, 0));
-        }
-
-        totalColor = totalColor.divideScalar(Math.max(1, this.samples));
+        Ray ray = this.getScene().getCameraObject().projectRay(u, v);
+        totalColor = this.getColorAt(ray, 0);
 
         // Gamma correction.
         totalColor = Vec3.of(
@@ -217,10 +196,7 @@ public class Renderer implements Runnable {
                 return Vec3.of(0, 0, 0);
             }
         } else {
-            Vec3 unitVec = ray.getDirection().normalize();
-            float t = (float) (0.5 * (unitVec.getY() + 1.0));
-
-            return Vec3.of(1.0f, 1.0f, 1.0f).multiplyScalar(1f - t).add(Vec3.of(0.5f, 0.7f, 1.0f).multiplyScalar(t));
+            return this.scene.getBackgroundColor();
         }
     }
 
@@ -272,7 +248,7 @@ public class Renderer implements Runnable {
 
     public static final BufferedImage renderToImage(Scene scene, RenderProperties.Value<?>... renderProperties) {
         Renderer render = new Renderer(scene, renderProperties);
-        render.run();
+        render.render();
         return render.writeToImage();
     }
 
@@ -293,7 +269,7 @@ public class Renderer implements Runnable {
         this.progressListeners.add(onProgress);
     }
 
-    public void setPixelAtInstant(int x, int y, Vec3 color) {
+    public void setPixelAtInstant(int x, int y, int passes, Vec3 color) {
         // Adjust y before updating.
         y = this.scene.getScreenHeight() - 1 - y;
         int finalY = y;
@@ -301,8 +277,13 @@ public class Renderer implements Runnable {
         // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
         // individually on multiple threads, so there is very little chance we modify the same value in this
         // array. No point synchronizing then.
-        renderData[x][y] = color;
-        this.progressListeners.forEach(c -> c.onPixelFinish(x, finalY, color));
+        this.renderData[x][y] = color;
+        this.progressListeners.forEach(c -> c.onPixelFinish(x, finalY, color.divideScalar(passes)));
+    }
+
+    public Vec3 getPixelAtInstant(int x, int y) {
+        y = this.scene.getScreenHeight() - 1 - y;
+        return this.renderData[x][y];
     }
 
     public void markTileCompletion(TileTracer tracer) {

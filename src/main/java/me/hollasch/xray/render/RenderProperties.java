@@ -18,7 +18,7 @@ public enum RenderProperties {
     SAMPLE_COUNT("Amount of samples per pixel", 32),
     BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0f),
 
-    T_MIN("Minimum t-value for ray cutoff", 0.01f),
+    T_MIN("Minimum t-value for ray cutoff", 0.001f),
     T_MAX("Maximum t-value for ray cutoff", Float.MAX_VALUE),
 
     MAX_DEPTH("Maximum amount of bounces per ray", 12);

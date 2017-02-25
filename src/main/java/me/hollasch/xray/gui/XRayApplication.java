@@ -3,12 +3,14 @@ package me.hollasch.xray.gui;
 import me.hollasch.xray.material.Diffuse;
 import me.hollasch.xray.material.Glass;
 import me.hollasch.xray.material.Glossy;
+import me.hollasch.xray.material.Material;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.Sphere;
 import me.hollasch.xray.render.RenderProperties;
 import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.render.TileTracer;
 import me.hollasch.xray.scene.Scene;
+import me.hollasch.xray.scene.camera.OrthographicCamera;
 import me.hollasch.xray.scene.camera.PerspectiveCamera;
 
 import javax.swing.*;
@@ -22,8 +24,8 @@ import java.io.IOException;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 1080;
-    private static final int HEIGHT = 640;
+    private static final int WIDTH = 500;
+    private static final int HEIGHT = 500;
 
     private static Scene scene;
 
@@ -32,7 +34,7 @@ public class XRayApplication {
 
     private static JPanel renderPanel = new JPanel() {
         {
-            setSize(WIDTH, HEIGHT - 20);
+            setSize(WIDTH, HEIGHT);
         }
 
         @Override
@@ -48,7 +50,8 @@ public class XRayApplication {
                     if (color == null) {
                         g.setColor(Color.black);
                     } else {
-                        g.setColor(new Color(color.getX(), color.getY(), color.getZ()));
+                        int rgb = color.toRGB();
+                        g.setColor(new Color(rgb));
                     }
 
                     g.drawLine(i, j, i, j);
@@ -70,7 +73,7 @@ public class XRayApplication {
                 }
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
-                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(100));
+                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(100), RenderProperties.TILE_SIZE_X.get(32), RenderProperties.TILE_SIZE_Y.get(32));
                 renderer.registerProgressListener(new Renderer.Listener() {
                     @Override
                     public void onPixelFinish(int x, int y, Vec3 color) {
@@ -92,27 +95,25 @@ public class XRayApplication {
         frame.setVisible(true);
 
         scene = new Scene(WIDTH, HEIGHT);
+        scene.setBackgroundColor(Vec3.of(0.4f, 0.2f, 0.8f));
 
-        Vec3 origin = Vec3.of(3, 3, 2);
+        Vec3 origin = Vec3.of(1, 1, 2);
         Vec3 lookAt = Vec3.of(0, 0, -1);
         float distanceToFocus = origin.subtract(lookAt).length();
 
         scene.setCameraObject(new PerspectiveCamera(origin, lookAt, Vec3.of(0, 1, 0), 80, (float) WIDTH / HEIGHT));
-        //scene.setCameraObject(new OrthographicCamera(origin, lookAt, Vec3.of(0, 1, 0), WIDTH, HEIGHT));
+        //scene.setCameraObject(new OrthographicCamera(origin, lookAt, Vec3.of(0, 1, 0), 15, 15));
 
-        scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Diffuse(new Vec3(0.8f, 0.3f, 0.3f))));
+        scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Diffuse(new Vec3(15.8f, 15.3f, 15.3f))));
         scene.getSceneObjects().add(new Sphere(Vec3.of(0, -1000f, -1), 999.5f, new Diffuse(new Vec3(0.2f, 0.5f, 0.3f))));
 
-        for (int i = 0; i < 20; ++i) {
+        for (int i = 0; i < 100; ++i) {
+            Material m = Math.random() > .66 ? Math.random() > .5 ? new Diffuse(Vec3.rand()) : new Glossy(Vec3.rand(), (float) (Math.random() * .15f)) : new Glass((float) (Math.random() + 1));
             scene.getSceneObjects().add(new Sphere(Vec3.of(
-                    (float) (Math.random() * 20 - 10f),
-                    0f,
-                    (float) (Math.random() * 20 - 10f)
-            ), (float) (Math.random() * .25 + .25f), new Diffuse(new Vec3(
-                    (float) Math.random(),
-                    (float) Math.random(),
-                    (float) Math.random()
-            ))));
+                    (float) (Math.random() * 50 - 25f),
+                    (float) (Math.random() * 3),
+                    (float) (Math.random() * 50 - 25f)
+            ), (float) (Math.random() + .5f), m));
         }
 
         scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(Vec3.of(0.8f, 0.6f, 0.2f), .034f)));

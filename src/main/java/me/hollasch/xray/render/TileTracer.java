@@ -1,6 +1,7 @@
 package me.hollasch.xray.render;
 
 import lombok.Getter;
+import me.hollasch.xray.math.Vec3;
 
 /**
  * @author Connor Hollasch
@@ -12,13 +13,6 @@ public class TileTracer implements Runnable {
     @Getter private int width, height;
 
     @Getter private final Renderer renderer;
-
-    private float rnd1, rnd2, rnd3;
-    {
-        rnd1 = (float) Math.random();
-        rnd2 = (float) Math.random();
-        rnd3 = (float) Math.random();
-    }
 
     @Getter private boolean rendering = false;
 
@@ -35,9 +29,13 @@ public class TileTracer implements Runnable {
     public void run() {
         this.rendering = true;
 
-        for (int x = 0; x < width; ++x) {
-            for (int y = 0; y < height; ++y) {
-                this.renderer.setPixelAtInstant(xi + x, yi + y, this.renderer.getColorAt(x + xi, y + yi));
+        for (int sample = 1; sample <= Math.max(1, this.renderer.samples); ++sample) {
+            for (int x = 0; x < width; ++x) {
+                for (int y = 0; y < height; ++y) {
+                    Vec3 current = this.renderer.getPixelAtInstant(xi + x, yi + y);
+                    current = current == null ? Vec3.of(0f, 0f, 0f) : current;
+                    this.renderer.setPixelAtInstant(xi + x, yi + y, sample, current.add(this.renderer.getColorAt(x + xi, y + yi)));
+                }
             }
         }
 

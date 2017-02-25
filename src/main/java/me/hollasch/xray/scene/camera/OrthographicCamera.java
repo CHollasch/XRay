@@ -21,15 +21,15 @@ public class OrthographicCamera implements Camera {
         this.origin = origin;
 
         this.w = origin.subtract(lookAt).normalize();
-        this.u = up.negate().cross(this.w).normalize();
+        this.u = up.cross(this.w).normalize();
         this.v = this.w.cross(this.u);
 
-        this.lowerLeftCorner = origin.subtract(this.u.multiplyScalar(width / 2f)).subtract(this.v.multiplyScalar(height / 2f)).subtract(this.w);
-        this.rows = this.v.multiplyScalar(height);
-        this.cols = this.u.multiplyScalar(width);
+        this.lowerLeftCorner = origin.subtract(this.u.multiplyScalar(width / 2)).subtract(this.v.multiplyScalar(height / 2)).subtract(this.w);
+        this.rows = this.v.multiplyScalar(width);
+        this.cols = this.u.multiplyScalar(height);
     }
 
     public Ray projectRay(float x, float y) {
-        return new Ray(this.lowerLeftCorner.add(this.rows.multiplyScalar(y)).add(this.cols.multiplyScalar(x)), this.w);
+        return new Ray(this.lowerLeftCorner.add(this.rows.multiplyScalar(y)).add(this.cols.multiplyScalar(x)), this.w.negate());
     }
 }

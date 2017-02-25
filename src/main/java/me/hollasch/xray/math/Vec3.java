@@ -39,7 +39,7 @@ public class Vec3 {
     }
 
     public final Vec3 add(float x, float y, float z) {
-        return new Vec3(this.x + x, this.y + y, this.z + z);
+        return Vec3.of(this.x + x, this.y + y, this.z + z);
     }
 
     public final Vec3 subtract(Vec3 other) {
@@ -47,7 +47,7 @@ public class Vec3 {
     }
 
     public final Vec3 subtract(float x, float y, float z) {
-        return new Vec3(this.x - x, this.y - y, this.z - z);
+        return Vec3.of(this.x - x, this.y - y, this.z - z);
     }
 
     public final Vec3 multiply(Vec3 other) {
@@ -55,7 +55,7 @@ public class Vec3 {
     }
 
     public final Vec3 multiply(float x, float y, float z) {
-        return new Vec3(this.x * x, this.y * y, this.z * z);
+        return Vec3.of(this.x * x, this.y * y, this.z * z);
     }
 
     public final Vec3 divide(Vec3 other) {
@@ -63,7 +63,7 @@ public class Vec3 {
     }
 
     public final Vec3 divide(float x, float y, float z) {
-        return new Vec3(this.x / x, this.y / y, this.z / z);
+        return Vec3.of(this.x / x, this.y / y, this.z / z);
     }
 
     public final Vec3 addScalar(float scalar) {
@@ -95,7 +95,7 @@ public class Vec3 {
     }
 
     public final Vec3 cross(float x, float y, float z) {
-        return new Vec3((this.y * z) - (this.z * y), (this.z * x) - (this.x * z), (this.x * y) - (this.y * x));
+        return Vec3.of((this.y * z) - (this.z * y), (this.z * x) - (this.x * z), (this.x * y) - (this.y * x));
     }
 
     public final float lengthSquared() {
@@ -107,7 +107,7 @@ public class Vec3 {
     }
 
     public final Vec3 negate() {
-        return new Vec3(-this.x, -this.y, -this.z);
+        return Vec3.of(-this.x, -this.y, -this.z);
     }
 
     public final Vec3 normalize() {
@@ -116,14 +116,28 @@ public class Vec3 {
             length = 1.0f / length;
         }
 
-        return new Vec3(this.x * length, this.y * length, this.z * length);
+        return Vec3.of(this.x * length, this.y * length, this.z * length);
+    }
+    
+    public final Vec3 clamp(float min, float max) {
+        return Vec3.of(
+                min > getX() ? min : max < getX() ? max : getX(),
+                min > getY() ? min : max < getY() ? max : getY(),
+                min > getZ() ? min : max < getZ() ? max : getZ()
+        );
     }
 
-    public int toRGB() {
+    public final int toRGB() {
         return this.toRGBA(1.0f);
     }
 
-    public int toRGBA(float alpha) {
+    public final int toRGBA(float alpha) {
+        Vec3 clamped = clamp(0f, 1f);
+
+        this.x = clamped.x;
+        this.y = clamped.y;
+        this.z = clamped.z;
+
         return ((int) (255.99 * this.z)
                 | ((int) (255.99 * this.y) << 8)
                 | ((int) (255.99 * this.x) << 16)
@@ -143,7 +157,7 @@ public class Vec3 {
     }
 
     public static final Vec3 rand() {
-        return new Vec3((float) Math.random(), (float) Math.random(), (float) Math.random());
+        return Vec3.of((float) Math.random(), (float) Math.random(), (float) Math.random());
     }
 
     public static final Vec3 randomInUnitSphere() {
