@@ -3,6 +3,7 @@ package me.hollasch.xray.material;
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
+import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
@@ -13,9 +14,9 @@ import me.hollasch.xray.render.RayCollision;
  */
 public class Diffuse extends Material {
 
-    @Getter private Vec3 albedo;
+    @Getter private SurfaceTexture albedo;
 
-    public Diffuse(Vec3 albedo) {
+    public Diffuse(SurfaceTexture albedo) {
         this.albedo = albedo;
     }
 
@@ -23,6 +24,6 @@ public class Diffuse extends Material {
         Vec3 target = collision.getPoint().add(collision.getNormal()).add(Vec3.randomInUnitSphere());
 
         Ray scattered = new Ray(collision.getPoint(), target.subtract(collision.getPoint()));
-        return new SurfaceInteraction(this.albedo, scattered);
+        return new SurfaceInteraction(this.albedo.getRGBAt(collision.getPoint()), scattered);
     }
 }

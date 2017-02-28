@@ -17,8 +17,8 @@ public class PerspectiveCamera implements Camera {
     // Orientation of the perspective camera
     @Getter private Vec3 origin;
     @Getter private Vec3 lowerLeftCorner;
-    @Getter private Vec3 cols;
-    @Getter private Vec3 rows;
+    @Getter private Vec3 screenWidth;
+    @Getter private Vec3 screenHeight;
 
     // Depth of field parameters.
     @Getter private float lensRadius;
@@ -71,8 +71,8 @@ public class PerspectiveCamera implements Camera {
                 .subtract(this.v.multiplyScalar(halfHeight * focus_distance))
                 .subtract(this.w.multiplyScalar(focus_distance));
 
-        this.cols = this.u.multiplyScalar(halfWidth * 2.0f * focus_distance);
-        this.rows = this.v.multiplyScalar(halfHeight * 2.0f * focus_distance);
+        this.screenWidth = this.u.multiplyScalar(halfWidth * 2.0f * focus_distance);
+        this.screenHeight = this.v.multiplyScalar(halfHeight * 2.0f * focus_distance);
     }
 
     //==============================================================================================
@@ -87,14 +87,14 @@ public class PerspectiveCamera implements Camera {
             return new Ray(
                     this.origin.add(offset),
                     this.lowerLeftCorner.add(
-                            this.cols.multiplyScalar(x)).add(this.rows.multiplyScalar(y)
+                            this.screenWidth.multiplyScalar(x)).add(this.screenHeight.multiplyScalar(y)
                     ).subtract(origin).subtract(offset)
             );
         } else {
             return new Ray(
                     this.origin,
                     this.lowerLeftCorner.add(
-                            this.cols.multiplyScalar(x)).add(this.rows.multiplyScalar(y)
+                            this.screenWidth.multiplyScalar(x)).add(this.screenHeight.multiplyScalar(y)
                     ).subtract(origin));
         }
     }

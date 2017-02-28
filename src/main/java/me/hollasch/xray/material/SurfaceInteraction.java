@@ -10,11 +10,18 @@ import me.hollasch.xray.render.Ray;
  */
 public class SurfaceInteraction {
 
-    @Getter private final Vec3 attenuation;
+    @Getter private final Vec3 lightContribution;
     @Getter private final Ray scattered;
 
+    @Getter private final boolean isEmissive;
+
     public SurfaceInteraction(final Vec3 attenuation, final Ray scattered) {
-        this.attenuation = attenuation;
+        this(attenuation, scattered, false);
+    }
+
+    public SurfaceInteraction(final Vec3 attenuation, final Ray scattered, boolean isEmissive) {
+        this.lightContribution = attenuation;
         this.scattered = scattered;
+        this.isEmissive = isEmissive;
     }
 }

@@ -1,6 +1,7 @@
 package me.hollasch.xray.material;
 
 import lombok.Getter;
+import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
@@ -11,13 +12,13 @@ import me.hollasch.xray.render.RayCollision;
  */
 public class Emission extends Material {
 
-    @Getter private Vec3 albedo;
+    @Getter private SurfaceTexture emissionColor;
 
-    public Emission(Vec3 albedo) {
-        this.albedo = albedo;
+    public Emission(SurfaceTexture emissionColor) {
+        this.emissionColor = emissionColor;
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
-        return null;
+        return new SurfaceInteraction(this.emissionColor.getRGBAt(collision.getPoint()), null, true);
     }
 }

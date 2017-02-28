@@ -3,6 +3,7 @@ package me.hollasch.xray.material;
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
+import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
@@ -13,10 +14,10 @@ import me.hollasch.xray.render.RayCollision;
  */
 public class Glossy extends Material {
 
-    @Getter private Vec3 albedo;
+    @Getter private SurfaceTexture albedo;
     @Getter private float roughness;
 
-    public Glossy(Vec3 albedo, float roughness) {
+    public Glossy(SurfaceTexture albedo, float roughness) {
         this.albedo = albedo;
         this.roughness = roughness;
     }
@@ -25,7 +26,7 @@ public class Glossy extends Material {
         Vec3 reflected = reflect(incoming.getDirection().normalize(), collision.getNormal());
 
         Ray scattered = new Ray(collision.getPoint(), reflected.add(Vec3.randomInUnitSphere().multiplyScalar(this.roughness)));
-        Vec3 attenuation = this.albedo;
+        Vec3 attenuation = this.albedo.getRGBAt(collision.getPoint());
 
         if (scattered.getDirection().dot(collision.getNormal()) > 0) {
             return new SurfaceInteraction(attenuation, scattered);

@@ -1,6 +1,7 @@
 package me.hollasch.xray.render;
 
 import lombok.Getter;
+import me.hollasch.xray.light.Light;
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
 import me.hollasch.xray.math.Vec3;
@@ -38,6 +39,7 @@ public class Renderer {
 
     @Getter
     private long samplesNeeded;
+
     @Getter
     private long samplesLeft;
 
@@ -126,26 +128,11 @@ public class Renderer {
         int height = scene.getScreenHeight();
         this.renderData = new Vec3[width][height];
 
-        long renderStart = System.currentTimeMillis();
-
         this.samplesNeeded = height * width * this.samples;
         this.samplesLeft = this.samplesNeeded;
 
-        registerProgressListener(new Listener() {
-            // Ignore these, used elsewhere.
-            public void onPixelFinish(int x, int y, Vec3 color) {}
-            public void onTileFinish(TileTracer tracer) {}
-
-            public void onRenderFinish(Vec3[][] finalImage) {
-                // Benchmark render time for final pixel.
-                Renderer.this.renderData = finalImage;
-                Renderer.this.renderDuration = System.currentTimeMillis() - renderStart;
-                Renderer.this.isRendering = false;
-            }
-        });
-
         synchronized (this.tracersLeft) {
-            for (int ty = height; ty >= 0; ty -= this.tileSizeY) {
+            for (int ty = 0; ty < height; ty += this.tileSizeY) {
                 for (int tx = 0; tx < width; tx += this.tileSizeX) {
                     TileTracer t = new TileTracer(this, tx, ty, Math.min(this.tileSizeX, width - tx), Math.min(this.tileSizeY, height - ty));
                     this.threadPool.submit(t);
@@ -180,7 +167,7 @@ public class Renderer {
     }
 
     public Vec3 getColorAt(Ray ray, int depth) {
-        RayCollision interaction = findCollision(ray);
+        RayCollision interaction = findObjectCollision(ray);
 
         if (interaction != null) {
             if (interaction.getMaterial() == null) {
@@ -191,7 +178,18 @@ public class Renderer {
             SurfaceInteraction surfaceInteraction = material.scatter(ray, interaction);
 
             if (depth < this.maxDepth && surfaceInteraction != null) {
-                return surfaceInteraction.getAttenuation().multiply(getColorAt(surfaceInteraction.getScattered(), depth + 1));
+                Vec3 fromLights = Vec3.of(0, 0, 0);
+
+                for (Light light : this.scene.getSceneLights()) {
+                    Vec3 lightContribution = light.getLightContribution(this, interaction, ray);
+                    fromLights = fromLights.add(lightContribution);
+                }
+
+                if (surfaceInteraction.isEmissive()) {
+                    return surfaceInteraction.getLightContribution();
+                }
+
+                return fromLights.add(surfaceInteraction.getLightContribution().multiply(getColorAt(surfaceInteraction.getScattered(), depth + 1)));
             } else {
                 return Vec3.of(0, 0, 0);
             }
@@ -200,7 +198,7 @@ public class Renderer {
         }
     }
 
-    public RayCollision findCollision(Ray ray) {
+    public RayCollision findObjectCollision(Ray ray) {
         RayCollision currentRecord = null;
         float closestCollision = this.tMax;
 
@@ -274,6 +272,10 @@ public class Renderer {
         y = this.scene.getScreenHeight() - 1 - y;
         int finalY = y;
 
+        // Compute render statistics.
+        --this.samplesLeft;
+        this.percentageComplete = (int) ((1f - ((float) this.samplesLeft / this.samplesNeeded)) * 100f);
+
         // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
         // individually on multiple threads, so there is very little chance we modify the same value in this
         // array. No point synchronizing then.
@@ -292,6 +294,9 @@ public class Renderer {
 
             if (this.tracersLeft.size() == 0) {
                 // Render complete
+                this.isRendering = false;
+                this.threadPool.shutdownNow();
+
                 this.progressListeners.forEach(c -> c.onRenderFinish(renderData));
             } else {
                 this.progressListeners.forEach(c -> c.onTileFinish(tracer));

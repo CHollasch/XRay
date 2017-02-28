@@ -10,9 +10,9 @@ import me.hollasch.xray.math.Vec3;
 @AllArgsConstructor
 public class SingleColorTexture implements SurfaceTexture {
 
-    private final int color;
+    private final Vec3 color;
 
-    public int getRGBAt(Vec3 vec3) {
+    public Vec3 getRGBAt(Vec3 vec3) {
         return this.color;
     }
 }

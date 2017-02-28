@@ -1,21 +1,21 @@
 package me.hollasch.xray.gui;
 
-import me.hollasch.xray.material.Diffuse;
-import me.hollasch.xray.material.Glass;
-import me.hollasch.xray.material.Glossy;
-import me.hollasch.xray.material.Material;
+import me.hollasch.xray.light.PointLight;
+import me.hollasch.xray.material.*;
+import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.Sphere;
 import me.hollasch.xray.render.RenderProperties;
 import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.render.TileTracer;
 import me.hollasch.xray.scene.Scene;
-import me.hollasch.xray.scene.camera.OrthographicCamera;
 import me.hollasch.xray.scene.camera.PerspectiveCamera;
 
+import javax.imageio.ImageIO;
 import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
+import java.io.File;
 import java.io.IOException;
 
 /**
@@ -24,8 +24,8 @@ import java.io.IOException;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 500;
-    private static final int HEIGHT = 500;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 1000;
 
     private static Scene scene;
 
@@ -73,7 +73,7 @@ public class XRayApplication {
                 }
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
-                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(100), RenderProperties.TILE_SIZE_X.get(32), RenderProperties.TILE_SIZE_Y.get(32));
+                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(32), RenderProperties.TILE_SIZE_X.get(256), RenderProperties.TILE_SIZE_Y.get(256));
                 renderer.registerProgressListener(new Renderer.Listener() {
                     @Override
                     public void onPixelFinish(int x, int y, Vec3 color) {
@@ -82,7 +82,19 @@ public class XRayApplication {
                     }
 
                     public void onTileFinish(TileTracer tracer) {}
-                    public void onRenderFinish(Vec3[][] finalImage) {}
+                    public void onRenderFinish(Vec3[][] finalImage) {
+                        try {
+                            File file = new File("render.png");
+
+                            if (!file.exists()) {
+                                file.createNewFile();
+                            }
+
+                            ImageIO.write(renderer.writeToImage(), "PNG", file);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
                 });
                 renderer.render();
             }
@@ -96,6 +108,7 @@ public class XRayApplication {
 
         scene = new Scene(WIDTH, HEIGHT);
         scene.setBackgroundColor(Vec3.of(0.4f, 0.2f, 0.8f));
+        scene.getSceneLights().add(new PointLight(Vec3.of(0, 2, 0), Vec3.of(1f, 0f, 0f), 1f));
 
         Vec3 origin = Vec3.of(1, 1, 2);
         Vec3 lookAt = Vec3.of(0, 0, -1);
@@ -104,11 +117,12 @@ public class XRayApplication {
         scene.setCameraObject(new PerspectiveCamera(origin, lookAt, Vec3.of(0, 1, 0), 80, (float) WIDTH / HEIGHT));
         //scene.setCameraObject(new OrthographicCamera(origin, lookAt, Vec3.of(0, 1, 0), 15, 15));
 
-        scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Diffuse(new Vec3(15.8f, 15.3f, 15.3f))));
-        scene.getSceneObjects().add(new Sphere(Vec3.of(0, -1000f, -1), 999.5f, new Diffuse(new Vec3(0.2f, 0.5f, 0.3f))));
+        //scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Emission(new Vec3(2.8f, 2.3f, 2.3f))));
+        //scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, 1), .5f, new Diffuse(Vec3.of(.5f, .8f, .8f))));
+        scene.getSceneObjects().add(new Sphere(Vec3.of(0, -1000f, -1), 999.5f, new Diffuse(new SingleColorTexture(new Vec3(0.2f, 0.5f, 0.3f)))));
 
         for (int i = 0; i < 100; ++i) {
-            Material m = Math.random() > .66 ? Math.random() > .5 ? new Diffuse(Vec3.rand()) : new Glossy(Vec3.rand(), (float) (Math.random() * .15f)) : new Glass((float) (Math.random() + 1));
+            Material m = Math.random() > .66 ? Math.random() > .5 ? new Diffuse(new SingleColorTexture(Vec3.rand())) : new Glossy(new SingleColorTexture(Vec3.rand()), (float) (Math.random() * .15f)) : new Glass((float) (Math.random() + 1));
             scene.getSceneObjects().add(new Sphere(Vec3.of(
                     (float) (Math.random() * 50 - 25f),
                     (float) (Math.random() * 3),
@@ -116,7 +130,7 @@ public class XRayApplication {
             ), (float) (Math.random() + .5f), m));
         }
 
-        scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(Vec3.of(0.8f, 0.6f, 0.2f), .034f)));
+        scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(new SingleColorTexture(Vec3.of(0.8f, 0.6f, 0.2f)), .2f)));
         scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), 0.5f, new Glass(1.5f)));
         scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), -0.45f, new Glass(1.5f)));
     }

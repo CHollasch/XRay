@@ -2,6 +2,7 @@ package me.hollasch.xray.scene;
 
 import lombok.Getter;
 import lombok.Setter;
+import me.hollasch.xray.light.Light;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.WorldObject;
 import me.hollasch.xray.scene.camera.Camera;
@@ -27,11 +28,13 @@ public class Scene {
     private Vec3 backgroundColor = Vec3.of(0.15f, 0.15f, 0.15f);
 
     @Getter private Set<WorldObject> sceneObjects;
+    @Getter private Set<Light>       sceneLights;
 
     public Scene(int screenWidth, int screenHeight) {
         this.screenWidth = screenWidth;
         this.screenHeight = screenHeight;
 
         this.sceneObjects = new HashSet<>();
+        this.sceneLights = new HashSet<>();
     }
 }

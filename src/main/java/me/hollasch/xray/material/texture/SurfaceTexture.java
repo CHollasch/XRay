@@ -8,5 +8,5 @@ import me.hollasch.xray.math.Vec3;
  */
 public interface SurfaceTexture {
 
-    int getRGBAt(Vec3 vec3);
+    Vec3 getRGBAt(Vec3 vec3);
 }
