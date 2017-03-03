@@ -73,7 +73,7 @@ public class XRayApplication {
                 }
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
-                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(32), RenderProperties.TILE_SIZE_X.get(256), RenderProperties.TILE_SIZE_Y.get(256));
+                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(64), RenderProperties.TILE_SIZE_X.get(32), RenderProperties.TILE_SIZE_Y.get(32));
                 renderer.registerProgressListener(new Renderer.Listener() {
                     @Override
                     public void onPixelFinish(int x, int y, Vec3 color) {
