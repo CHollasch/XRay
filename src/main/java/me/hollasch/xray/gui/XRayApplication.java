@@ -5,6 +5,7 @@ import me.hollasch.xray.material.*;
 import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.Sphere;
+import me.hollasch.xray.object.TriangleObject;
 import me.hollasch.xray.render.RenderProperties;
 import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.render.TileTracer;
@@ -73,7 +74,7 @@ public class XRayApplication {
                 }
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
-                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(64), RenderProperties.TILE_SIZE_X.get(32), RenderProperties.TILE_SIZE_Y.get(32));
+                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(4), RenderProperties.TILE_SIZE_X.get(256), RenderProperties.TILE_SIZE_Y.get(256));
                 renderer.registerProgressListener(new Renderer.Listener() {
                     @Override
                     public void onPixelFinish(int x, int y, Vec3 color) {
@@ -108,7 +109,7 @@ public class XRayApplication {
 
         scene = new Scene(WIDTH, HEIGHT);
         scene.setBackgroundColor(Vec3.of(0.4f, 0.2f, 0.8f));
-        scene.getSceneLights().add(new PointLight(Vec3.of(0, 2, 0), Vec3.of(1f, 0f, 0f), 1f));
+        //scene.getSceneLights().add(new PointLight(Vec3.of(0, 2, 0), Vec3.of(1f, 0f, 0f), 1f));
 
         Vec3 origin = Vec3.of(1, 1, 2);
         Vec3 lookAt = Vec3.of(0, 0, -1);
@@ -129,6 +130,8 @@ public class XRayApplication {
                     (float) (Math.random() * 50 - 25f)
             ), (float) (Math.random() + .5f), m));
         }
+
+        scene.getSceneObjects().add(new TriangleObject(Vec3.of(1, 2, -1), Vec3.of(1, 1, 3), Vec3.of(3, -1, -1), new Diffuse(new SingleColorTexture(Vec3.of(0.1f, 0.1f, 0.8f)))));
 
         scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(new SingleColorTexture(Vec3.of(0.8f, 0.6f, 0.2f)), .2f)));
         scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), 0.5f, new Glass(1.5f)));
