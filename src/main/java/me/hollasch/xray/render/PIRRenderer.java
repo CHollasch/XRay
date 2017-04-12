@@ -9,15 +9,24 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
 /**
- * Created by conno on 4/12/2017.
+ * @author Connor Hollasch
+ * @since April 12, 2:06 PM
  */
 public class PIRRenderer extends Renderer {
+
+    //==============================================================================================
+    // INSTANCE VARIABLES
+    //==============================================================================================
 
     @Getter
     private final int startLevel;
 
     @Getter
     private final int samples;
+
+    //==============================================================================================
+    // CONSTRUCTORS
+    //==============================================================================================
 
     public PIRRenderer(final Scene scene, final RenderProperties.Value<?>... renderProps) {
         super(scene);
@@ -38,6 +47,10 @@ public class PIRRenderer extends Renderer {
         this.tMax = (Float) propertyMap.get(RenderProperties.T_MAX).get();
         this.maxDepth = (Integer) propertyMap.get(RenderProperties.MAX_DEPTH).get();
     }
+
+    //==============================================================================================
+    // PUBLIC METHODS
+    //==============================================================================================
 
     public void render() {
         ExecutorService s = Executors.newSingleThreadExecutor();
@@ -112,6 +125,10 @@ public class PIRRenderer extends Renderer {
         });
     }
 
+    //==============================================================================================
+    // PRIVATE HELPER METHODS
+    //==============================================================================================
+
     private Vec3 getColorWithSamples(float x, float y, int samples) {
         Vec3 color = Vec3.of(0f, 0f, 0f);
 
@@ -131,30 +148,5 @@ public class PIRRenderer extends Renderer {
                 setPixelAtInstant(pX, pY, color);
             }
         }
-    }
-
-    //==============================================================================================
-    // PROGRESS WATCHER
-    //==============================================================================================
-
-    public void setPixelAtInstant(int x, int y, Vec3 color) {
-        if (x < 0 || x >= this.renderData.length || y < 0 || y >= this.scene.getScreenHeight()) {
-            return;
-        }
-
-        // Adjust y before updating.
-        y = this.scene.getScreenHeight() - 1 - y;
-        int finalY = y;
-
-        // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
-        // individually on multiple threads, so there is very little chance we modify the same value in this
-        // array. No point synchronizing then.
-        this.renderData[x][y] = color;
-        getProgressListeners().forEach(c -> c.onPixelFinish(x, finalY, color));
-    }
-
-    public Vec3 getPixelAtInstant(int x, int y) {
-        y = this.scene.getScreenHeight() - 1 - y;
-        return this.renderData[x][y];
     }
 }

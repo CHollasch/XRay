@@ -161,6 +161,27 @@ public abstract class Renderer {
         void onRenderFinish(Vec3[][] finalImage);
     }
 
+    public void setPixelAtInstant(int x, int y, Vec3 color) {
+        if (x < 0 || x >= this.renderData.length || y < 0 || y >= this.scene.getScreenHeight()) {
+            return;
+        }
+
+        // Adjust y before updating.
+        y = this.scene.getScreenHeight() - 1 - y;
+        int finalY = y;
+
+        // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
+        // individually on multiple threads, so there is very little chance we modify the same value in this
+        // array. No point synchronizing then.
+        this.renderData[x][y] = color;
+        getProgressListeners().forEach(c -> c.onPixelFinish(x, finalY, color));
+    }
+
+    public Vec3 getPixelAtInstant(int x, int y) {
+        y = this.scene.getScreenHeight() - 1 - y;
+        return this.renderData[x][y];
+    }
+
     //==============================================================================================
     // ABSTRACT METHODS
     //==============================================================================================

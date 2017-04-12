@@ -145,7 +145,7 @@ public class MultithreadedRenderer extends Renderer {
     // PROGRESS WATCHER
     //==============================================================================================
 
-    public void setPixelAtInstant(int x, int y, int passes, Vec3 color) {
+    protected void setPixelAtInstant(int x, int y, int passes, Vec3 color) {
         // Adjust y before updating.
         y = this.scene.getScreenHeight() - 1 - y;
         int finalY = y;
@@ -161,12 +161,7 @@ public class MultithreadedRenderer extends Renderer {
         getProgressListeners().forEach(c -> c.onPixelFinish(x, finalY, color.divideScalar(passes)));
     }
 
-    public Vec3 getPixelAtInstant(int x, int y) {
-        y = this.scene.getScreenHeight() - 1 - y;
-        return this.renderData[x][y];
-    }
-
-    public void markTileCompletion(TileTracer tracer) {
+    protected void markTileCompletion(TileTracer tracer) {
         synchronized (this.tracersLeft) {
             this.tracersLeft.remove(tracer);
 
