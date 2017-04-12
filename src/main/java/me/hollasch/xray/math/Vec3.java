@@ -132,16 +132,20 @@ public class Vec3 {
     }
 
     public final int toRGBA(float alpha) {
+        return toRGBA(255.99f, alpha);
+    }
+
+    public final int toRGBA(float max, float alpha) {
         Vec3 clamped = clamp(0f, 1f);
 
         this.x = clamped.x;
         this.y = clamped.y;
         this.z = clamped.z;
 
-        return ((int) (255.99 * this.z)
-                | ((int) (255.99 * this.y) << 8)
-                | ((int) (255.99 * this.x) << 16)
-                | ((int) (255.99 * alpha) << 24));
+        return ((int) (max * this.z)
+                | ((int) (max * this.y) << 8)
+                | ((int) (max * this.x) << 16)
+                | ((int) (max * alpha) << 24));
     }
 
     public Vec3 clone() {

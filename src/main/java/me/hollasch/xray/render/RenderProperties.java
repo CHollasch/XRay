@@ -21,7 +21,8 @@ public enum RenderProperties {
     T_MIN("Minimum t-value for ray cutoff", 0.001f),
     T_MAX("Maximum t-value for ray cutoff", Float.MAX_VALUE),
 
-    MAX_DEPTH("Maximum amount of bounces per ray", 12);
+    MAX_DEPTH("Maximum amount of bounces per ray", 12),
+    PIR_START_DEPTH("Starting size of PIR chunks", 8);
 
     @Getter private String description;
     @Getter private Object defaultValue;

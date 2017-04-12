@@ -12,11 +12,11 @@ public class TileTracer implements Runnable {
     @Getter private int xi, yi;
     @Getter private int width, height;
 
-    @Getter private final Renderer renderer;
+    @Getter private final MultithreadedRenderer renderer;
 
     @Getter private boolean rendering = false;
 
-    public TileTracer(final Renderer renderer, final int xi, final int yi, final int width, final int height) {
+    public TileTracer(final MultithreadedRenderer renderer, final int xi, final int yi, final int width, final int height) {
         this.renderer = renderer;
 
         this.xi = xi;

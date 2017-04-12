@@ -1,14 +1,12 @@
 package me.hollasch.xray.gui;
 
-import me.hollasch.xray.light.PointLight;
 import me.hollasch.xray.material.*;
 import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.Sphere;
 import me.hollasch.xray.object.TriangleObject;
-import me.hollasch.xray.render.RenderProperties;
+import me.hollasch.xray.render.*;
 import me.hollasch.xray.render.Renderer;
-import me.hollasch.xray.render.TileTracer;
 import me.hollasch.xray.scene.Scene;
 import me.hollasch.xray.scene.camera.PerspectiveCamera;
 
@@ -25,8 +23,8 @@ import java.io.IOException;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 1000;
-    private static final int HEIGHT = 1000;
+    private static final int WIDTH = 750;
+    private static final int HEIGHT = 750;
 
     private static Scene scene;
 
@@ -64,7 +62,7 @@ public class XRayApplication {
     public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame("XRay - Connor Hollasch");
         frame.setSize(WIDTH, HEIGHT);
-        frame.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         final JButton render = new JButton("Render");
         render.addActionListener(new AbstractAction() {
@@ -74,15 +72,21 @@ public class XRayApplication {
                 }
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
-                renderer = new Renderer(scene, RenderProperties.SAMPLE_COUNT.get(4), RenderProperties.TILE_SIZE_X.get(256), RenderProperties.TILE_SIZE_Y.get(256));
-                renderer.registerProgressListener(new Renderer.Listener() {
+
+                renderer = new PIRRenderer(
+                        scene,
+                        RenderProperties.SAMPLE_COUNT.get(16),
+                        RenderProperties.TILE_SIZE_X.get(128),
+                        RenderProperties.TILE_SIZE_Y.get(128)
+                );
+
+                renderer.registerProgressListener(new MultithreadedRenderer.Listener() {
                     @Override
                     public void onPixelFinish(int x, int y, Vec3 color) {
                         pixelData[x][y] = color;
                         renderPanel.repaint();
                     }
 
-                    public void onTileFinish(TileTracer tracer) {}
                     public void onRenderFinish(Vec3[][] finalImage) {
                         try {
                             File file = new File("render.png");
