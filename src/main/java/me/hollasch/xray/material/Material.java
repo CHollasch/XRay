@@ -1,6 +1,7 @@
 package me.hollasch.xray.material;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
@@ -12,7 +13,9 @@ import me.hollasch.xray.render.RayCollision;
  */
 public abstract class Material {
 
-    @Getter private SurfaceTexture surfaceTexture;
+    @Getter
+    @Setter
+    private SurfaceTexture surfaceTexture;
 
     public abstract SurfaceInteraction scatter(Ray incoming, RayCollision collision);
 

@@ -1,14 +1,11 @@
 package me.hollasch.xray.gui;
 
-import me.hollasch.xray.material.*;
-import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.object.Sphere;
-import me.hollasch.xray.object.TriangleObject;
-import me.hollasch.xray.render.*;
+import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
+import me.hollasch.xray.render.RenderProperties;
 import me.hollasch.xray.render.Renderer;
+import me.hollasch.xray.render.multithreaded.TileDirection;
 import me.hollasch.xray.scene.Scene;
-import me.hollasch.xray.scene.camera.PerspectiveCamera;
 
 import javax.imageio.ImageIO;
 import javax.swing.*;
@@ -23,8 +20,8 @@ import java.io.IOException;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 750;
-    private static final int HEIGHT = 750;
+    private static final int WIDTH = 600;
+    private static final int HEIGHT = 600;
 
     private static Scene scene;
 
@@ -36,7 +33,6 @@ public class XRayApplication {
             setSize(WIDTH, HEIGHT);
         }
 
-        @Override
         public void paint(Graphics g) {
             if (pixelData == null) {
                 return;
@@ -61,7 +57,7 @@ public class XRayApplication {
 
     public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame("XRay - Connor Hollasch");
-        frame.setSize(WIDTH, HEIGHT);
+        frame.setSize(WIDTH, HEIGHT + 25);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         final JButton render = new JButton("Render");
@@ -73,11 +69,13 @@ public class XRayApplication {
 
                 pixelData = new Vec3[WIDTH][HEIGHT];
 
-                renderer = new PIRRenderer(
+                renderer = new MultithreadedRenderer(
                         scene,
-                        RenderProperties.SAMPLE_COUNT.get(16),
-                        RenderProperties.TILE_SIZE_X.get(128),
-                        RenderProperties.TILE_SIZE_Y.get(128)
+                        RenderProperties.SAMPLE_COUNT.get(1),
+                        RenderProperties.TILE_SIZE_X.get(32),
+                        RenderProperties.TILE_SIZE_Y.get(32),
+                        RenderProperties.MAX_DEPTH.get(12),
+                        RenderProperties.TILE_DIRECTION.get(TileDirection.TOP_TO_BOTTOM)
                 );
 
                 renderer.registerProgressListener(new MultithreadedRenderer.Listener() {
@@ -110,35 +108,6 @@ public class XRayApplication {
         frame.add(render, BorderLayout.PAGE_END);
 
         frame.setVisible(true);
-
-        scene = new Scene(WIDTH, HEIGHT);
-        scene.setBackgroundColor(Vec3.of(0.4f, 0.2f, 0.8f));
-        //scene.getSceneLights().add(new PointLight(Vec3.of(0, 2, 0), Vec3.of(1f, 0f, 0f), 1f));
-
-        Vec3 origin = Vec3.of(1, 1, 2);
-        Vec3 lookAt = Vec3.of(0, 0, -1);
-        float distanceToFocus = origin.subtract(lookAt).length();
-
-        scene.setCameraObject(new PerspectiveCamera(origin, lookAt, Vec3.of(0, 1, 0), 80, (float) WIDTH / HEIGHT));
-        //scene.setCameraObject(new OrthographicCamera(origin, lookAt, Vec3.of(0, 1, 0), 15, 15));
-
-        //scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, -1), .6f, new Emission(new Vec3(2.8f, 2.3f, 2.3f))));
-        //scene.getSceneObjects().add(new Sphere(Vec3.of(0, 0, 1), .5f, new Diffuse(Vec3.of(.5f, .8f, .8f))));
-        scene.getSceneObjects().add(new Sphere(Vec3.of(0, -1000f, -1), 999.5f, new Diffuse(new SingleColorTexture(new Vec3(0.2f, 0.5f, 0.3f)))));
-
-        for (int i = 0; i < 100; ++i) {
-            Material m = Math.random() > .66 ? Math.random() > .5 ? new Diffuse(new SingleColorTexture(Vec3.rand())) : new Glossy(new SingleColorTexture(Vec3.rand()), (float) (Math.random() * .15f)) : new Glass((float) (Math.random() + 1));
-            scene.getSceneObjects().add(new Sphere(Vec3.of(
-                    (float) (Math.random() * 50 - 25f),
-                    (float) (Math.random() * 3),
-                    (float) (Math.random() * 50 - 25f)
-            ), (float) (Math.random() + .5f), m));
-        }
-
-        scene.getSceneObjects().add(new TriangleObject(Vec3.of(1, 2, -1), Vec3.of(1, 1, 3), Vec3.of(3, -1, -1), new Diffuse(new SingleColorTexture(Vec3.of(0.1f, 0.1f, 0.8f)))));
-
-        scene.getSceneObjects().add(new Sphere(Vec3.of(1, 0, -1), 0.5f, new Glossy(new SingleColorTexture(Vec3.of(0.8f, 0.6f, 0.2f)), .2f)));
-        scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), 0.5f, new Glass(1.5f)));
-        scene.getSceneObjects().add(new Sphere(Vec3.of(-1, 0, -1), -0.45f, new Glass(1.5f)));
+        scene = new DemoScene(WIDTH, HEIGHT);
     }
 }

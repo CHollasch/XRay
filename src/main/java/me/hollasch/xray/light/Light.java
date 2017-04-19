@@ -4,7 +4,6 @@ import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
-import me.hollasch.xray.render.MultithreadedRenderer;
 import me.hollasch.xray.render.Renderer;
 
 /**

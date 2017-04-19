@@ -1,7 +1,8 @@
-package me.hollasch.xray.render;
+package me.hollasch.xray.render.multithreaded;
 
 import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
+import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
 
 /**
  * @author Connor Hollasch

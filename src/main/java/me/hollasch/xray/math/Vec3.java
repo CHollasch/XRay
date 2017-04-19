@@ -160,6 +160,18 @@ public class Vec3 {
         return new Vec3(x, y, z);
     }
 
+    public static final Vec3 of(double x, double y, double z) {
+        return Vec3.of((float) x, (float) y, (float) z);
+    }
+
+    public static final Vec3 of(float c) {
+        return Vec3.of(c, c, c);
+    }
+
+    public static final Vec3 of(double c) {
+        return Vec3.of((float) c);
+    }
+
     public static final Vec3 rand() {
         return Vec3.of((float) Math.random(), (float) Math.random(), (float) Math.random());
     }

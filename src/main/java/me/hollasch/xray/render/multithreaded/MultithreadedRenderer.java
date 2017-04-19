@@ -1,11 +1,9 @@
-package me.hollasch.xray.render;
+package me.hollasch.xray.render.multithreaded;
 
 import lombok.Getter;
-import me.hollasch.xray.light.Light;
-import me.hollasch.xray.material.Material;
-import me.hollasch.xray.material.SurfaceInteraction;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.object.WorldObject;
+import me.hollasch.xray.render.RenderProperties;
+import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.scene.Scene;
 
 import java.awt.image.BufferedImage;
@@ -57,6 +55,8 @@ public class MultithreadedRenderer extends Renderer {
     protected int tileSizeX;
     protected int tileSizeY;
 
+    protected TileDirection tileDirection;
+
     //==============================================================================================
     // CONSTRUCTORS
     //==============================================================================================
@@ -80,6 +80,7 @@ public class MultithreadedRenderer extends Renderer {
         this.threadPool = Executors.newFixedThreadPool(this.threadCount);
         this.tileSizeX = Math.min((Integer) propertyMap.get(RenderProperties.TILE_SIZE_X).get(), this.scene.getScreenWidth());
         this.tileSizeY = Math.min((Integer) propertyMap.get(RenderProperties.TILE_SIZE_Y).get(), this.scene.getScreenHeight());
+        this.tileDirection = (TileDirection) propertyMap.get(RenderProperties.TILE_DIRECTION).get();
 
         this.tracersLeft = new HashSet<>();
 
@@ -112,14 +113,11 @@ public class MultithreadedRenderer extends Renderer {
         this.samplesLeft = this.samplesNeeded;
 
         synchronized (this.tracersLeft) {
-            for (int ty = 0; ty < height; ty += this.tileSizeY) {
-                for (int tx = 0; tx < width; tx += this.tileSizeX) {
-                    TileTracer t = new TileTracer(this, tx, ty, Math.min(this.tileSizeX, width - tx), Math.min(this.tileSizeY, height - ty));
-                    this.threadPool.submit(t);
-
-                    this.tracersLeft.add(t);
-                }
-            }
+            this.tileDirection.createTileTracers(this, width, height, this.tileSizeX, this.tileSizeY)
+                    .forEach(t -> {
+                this.threadPool.submit(t);
+                this.tracersLeft.add(t);
+            });
         }
     }
 

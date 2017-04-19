@@ -8,6 +8,7 @@ import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.WorldObject;
+import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
 import me.hollasch.xray.scene.Scene;
 
 import java.awt.image.BufferedImage;
@@ -108,7 +109,7 @@ public abstract class Renderer {
                 return Vec3.of(0, 0, 0);
             }
         } else {
-            return this.scene.getBackgroundColor();
+            return this.scene.getBackground().getRGBAt(ray.getDirection());
         }
     }
 

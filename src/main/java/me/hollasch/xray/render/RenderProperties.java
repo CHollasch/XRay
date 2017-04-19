@@ -1,6 +1,8 @@
 package me.hollasch.xray.render;
 
 import lombok.Getter;
+import me.hollasch.xray.render.multithreaded.TileDirection;
+import me.hollasch.xray.render.multithreaded.TileTracer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -14,6 +16,7 @@ public enum RenderProperties {
     THREAD_COUNT("Amount of threads for multi-core processing", Runtime.getRuntime().availableProcessors()),
     TILE_SIZE_X("Size of each render tile in the x direction", 32),
     TILE_SIZE_Y("Size of each render tile in the y direction", 32),
+    TILE_DIRECTION("Which direction to sample tiles in", TileDirection.CENTER),
 
     SAMPLE_COUNT("Amount of samples per pixel", 32),
     BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0f),

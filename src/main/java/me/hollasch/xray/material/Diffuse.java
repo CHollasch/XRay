@@ -1,8 +1,6 @@
 package me.hollasch.xray.material;
 
 import lombok.Getter;
-import me.hollasch.xray.material.Material;
-import me.hollasch.xray.material.SurfaceInteraction;
 import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
