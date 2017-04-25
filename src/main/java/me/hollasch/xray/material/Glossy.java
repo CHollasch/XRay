@@ -15,9 +15,9 @@ import me.hollasch.xray.render.RayCollision;
 public class Glossy extends Material {
 
     @Getter private SurfaceTexture albedo;
-    @Getter private float roughness;
+    @Getter private double roughness;
 
-    public Glossy(SurfaceTexture albedo, float roughness) {
+    public Glossy(SurfaceTexture albedo, double roughness) {
         this.albedo = albedo;
         this.roughness = roughness;
     }
@@ -25,7 +25,10 @@ public class Glossy extends Material {
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
         Vec3 reflected = reflect(incoming.getDirection().normalize(), collision.getNormal());
 
-        Ray scattered = new Ray(collision.getPoint(), reflected.add(Vec3.randomInUnitSphere().multiplyScalar(this.roughness)));
+        Ray scattered = new Ray(
+                collision.getPoint(),
+                reflected.add(Vec3.randomInUnitSphere().multiplyScalar(this.roughness))
+        );
         Vec3 attenuation = this.albedo.getRGBAt(collision.getPoint());
 
         if (scattered.getDirection().dot(collision.getNormal()) > 0) {

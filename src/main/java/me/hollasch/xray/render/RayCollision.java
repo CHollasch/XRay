@@ -10,13 +10,13 @@ import me.hollasch.xray.math.Vec3;
  */
 public class RayCollision {
 
-    @Getter private float tValue;
+    @Getter private double tValue;
     @Getter private Vec3 point;
     @Getter private Vec3 normal;
 
     @Getter private Material material;
 
-    public RayCollision(float tValue, Vec3 point, Vec3 normal, Material material) {
+    public RayCollision(double tValue, Vec3 point, Vec3 normal, Material material) {
         this.tValue = tValue;
         this.point = point;
         this.normal = normal;

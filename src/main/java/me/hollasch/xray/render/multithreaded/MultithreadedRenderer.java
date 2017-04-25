@@ -33,7 +33,7 @@ public class MultithreadedRenderer extends Renderer {
     private long samplesLeft;
 
     @Getter
-    private float percentageComplete;
+    private double percentageComplete;
 
     @Getter
     private final Set<TileTracer> tracersLeft;
@@ -88,9 +88,9 @@ public class MultithreadedRenderer extends Renderer {
 
         // Initialize renderer properties.
 
-        this.blurFactor = (Float) propertyMap.get(RenderProperties.BLUR_FACTOR).get();
-        this.tMin = (Float) propertyMap.get(RenderProperties.T_MIN).get();
-        this.tMax = (Float) propertyMap.get(RenderProperties.T_MAX).get();
+        this.blurFactor = (Double) propertyMap.get(RenderProperties.BLUR_FACTOR).get();
+        this.tMin = (Double) propertyMap.get(RenderProperties.T_MIN).get();
+        this.tMax = (Double) propertyMap.get(RenderProperties.T_MAX).get();
         this.maxDepth = (Integer) propertyMap.get(RenderProperties.MAX_DEPTH).get();
     }
 
@@ -150,7 +150,7 @@ public class MultithreadedRenderer extends Renderer {
 
         // Compute render statistics.
         --this.samplesLeft;
-        this.percentageComplete = (int) ((1f - ((float) this.samplesLeft / this.samplesNeeded)) * 100f);
+        this.percentageComplete = (int) ((1 - (this.samplesLeft / this.samplesNeeded)) * 100);
 
         // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
         // individually on multiple threads, so there is very little chance we modify the same value in this

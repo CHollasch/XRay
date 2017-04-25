@@ -23,16 +23,16 @@ public abstract class Material {
         return incoming.subtract(normal.multiplyScalar(incoming.dot(normal) * 2.0f));
     }
 
-    protected Vec3 refract(Vec3 incoming, Vec3 normal, float n) {
+    protected Vec3 refract(Vec3 incoming, Vec3 normal, double n) {
         Vec3 unitIncoming = incoming.normalize();
-        float dot = unitIncoming.dot(normal);
-        float discriminant = 1.0f - n * n * (1 - (dot * dot));
+        double dot = unitIncoming.dot(normal);
+        double discriminant = 1.0 - n * n * (1 - (dot * dot));
 
         if (discriminant > 0) {
             return unitIncoming
                     .subtract(normal.multiplyScalar(dot))
                     .multiplyScalar(n)
-                    .subtract(normal.multiplyScalar((float) Math.sqrt(discriminant)));
+                    .subtract(normal.multiplyScalar(Math.sqrt(discriminant)));
         } else {
             return null;
         }

@@ -1,6 +1,7 @@
 package me.hollasch.xray.gui;
 
 import me.hollasch.xray.math.Vec3;
+import me.hollasch.xray.render.PIRRenderer;
 import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
 import me.hollasch.xray.render.RenderProperties;
 import me.hollasch.xray.render.Renderer;
@@ -20,8 +21,8 @@ import java.io.IOException;
  */
 public class XRayApplication {
 
-    private static final int WIDTH = 600;
-    private static final int HEIGHT = 600;
+    private static final int WIDTH = 1000;
+    private static final int HEIGHT = 1000;
 
     private static Scene scene;
 
@@ -57,7 +58,7 @@ public class XRayApplication {
 
     public static void main(String[] args) throws IOException {
         JFrame frame = new JFrame("XRay - Connor Hollasch");
-        frame.setSize(WIDTH, HEIGHT + 25);
+        frame.setSize(WIDTH + 25, HEIGHT + 75);
         frame.setDefaultCloseOperation(WindowConstants.EXIT_ON_CLOSE);
 
         final JButton render = new JButton("Render");
@@ -71,11 +72,13 @@ public class XRayApplication {
 
                 renderer = new MultithreadedRenderer(
                         scene,
-                        RenderProperties.SAMPLE_COUNT.get(1),
-                        RenderProperties.TILE_SIZE_X.get(32),
-                        RenderProperties.TILE_SIZE_Y.get(32),
-                        RenderProperties.MAX_DEPTH.get(12),
-                        RenderProperties.TILE_DIRECTION.get(TileDirection.TOP_TO_BOTTOM)
+                        RenderProperties.SAMPLE_COUNT.get(700),
+                        RenderProperties.THREAD_COUNT.get(400),
+                        RenderProperties.TILE_SIZE_X.get(50),
+                        RenderProperties.TILE_SIZE_Y.get(50),
+                        RenderProperties.T_MIN.get(.01),
+                        RenderProperties.MAX_DEPTH.get(24),
+                        RenderProperties.TILE_DIRECTION.get(TileDirection.BOTTOM_TO_TOP)
                 );
 
                 renderer.registerProgressListener(new MultithreadedRenderer.Listener() {

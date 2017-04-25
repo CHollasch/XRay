@@ -17,5 +17,7 @@ public abstract class WorldObject {
         this.material = material;
     }
 
-    public abstract RayCollision rayIntersect(Ray ray, float tMin, float tMax);
+    public abstract RayCollision rayIntersect(Ray ray, double tMin, double tMax);
+
+    public abstract AABB getBoundingBox();
 }

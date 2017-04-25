@@ -21,7 +21,7 @@ public class PerspectiveCamera implements Camera {
     @Getter private Vec3 screenHeight;
 
     // Depth of field parameters.
-    @Getter private float lensRadius;
+    @Getter private double lensRadius;
     @Getter private boolean hasDOF = true;
 
     // Axis in 3space for camera orientation.
@@ -35,8 +35,8 @@ public class PerspectiveCamera implements Camera {
             final Vec3 origin,
             final Vec3 lookAt,
             final Vec3 up,
-            final float vFov,
-            final float aspectRatio
+            final double vFov,
+            final double aspectRatio
     ) {
         this(origin, lookAt, up, vFov, aspectRatio, 1, 1);
         this.hasDOF = false;
@@ -46,17 +46,17 @@ public class PerspectiveCamera implements Camera {
             final Vec3 origin,
             final Vec3 lookAt,
             final Vec3 up,
-            final float verticalFOV,
-            final float aspectRatio,
-            final float aperture,
-            final float focus_distance
+            final double verticalFOV,
+            final double aspectRatio,
+            final double aperture,
+            final double focus_distance
     ) {
         this.lensRadius = aperture / 2.0f;
 
         // Take the FOV and calculate the height and width of the projection plane.
-        float theta = (float) (verticalFOV * Math.PI / 180f);
-        float halfHeight = (float) Math.tan(theta / 2.0f);
-        float halfWidth = aspectRatio * halfHeight;
+        double theta = verticalFOV * Math.PI / 180f;
+        double halfHeight = Math.tan(theta / 2.0f);
+        double halfWidth = aspectRatio * halfHeight;
 
         this.origin = origin;
 
@@ -79,7 +79,7 @@ public class PerspectiveCamera implements Camera {
     // PUBLIC METHODS
     //==============================================================================================
 
-    public Ray projectRay(float x, float y) {
+    public Ray projectRay(double x, double y) {
         if (this.hasDOF) {
             Vec3 randomDOF = Vec3.randomInUnitDisk().multiplyScalar(this.lensRadius);
             Vec3 offset = this.u.multiplyScalar(randomDOF.getX()).add(this.v.multiplyScalar(randomDOF.getY()));

@@ -11,6 +11,7 @@ import me.hollasch.xray.render.RayCollision;
 public class Quad extends WorldObject {
 
     private Triangle t1, t2;
+    private AABB boundingBox;
 
     public Quad(Vec3 a, Vec3 b, Vec3 c, Vec3 d, Material material) {
         this.material = material;
@@ -22,10 +23,15 @@ public class Quad extends WorldObject {
 
         this.t1 = new Triangle(a, b, d, material);
         this.t2 = new Triangle(a, c, d, material);
+
+        AABB t1bb = this.t1.getBoundingBox();
+        AABB t2bb = this.t2.getBoundingBox();
+
+        this.boundingBox = AABB.merge(t1bb, t2bb);
     }
 
     @Override
-    public RayCollision rayIntersect(Ray ray, float tMin, float tMax) {
+    public RayCollision rayIntersect(Ray ray, double tMin, double tMax) {
         RayCollision t1Hit = t1.rayIntersect(ray, tMin, tMax);
 
         if (t1Hit == null) {
@@ -33,5 +39,10 @@ public class Quad extends WorldObject {
         }
 
         return t1Hit;
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        return this.boundingBox;
     }
 }

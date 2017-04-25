@@ -19,10 +19,10 @@ public enum RenderProperties {
     TILE_DIRECTION("Which direction to sample tiles in", TileDirection.CENTER),
 
     SAMPLE_COUNT("Amount of samples per pixel", 32),
-    BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0f),
+    BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0),
 
-    T_MIN("Minimum t-value for ray cutoff", 0.001f),
-    T_MAX("Maximum t-value for ray cutoff", Float.MAX_VALUE),
+    T_MIN("Minimum t-value for ray cutoff", 0.001),
+    T_MAX("Maximum t-value for ray cutoff", Double.MAX_VALUE),
 
     MAX_DEPTH("Maximum amount of bounces per ray", 12),
     PIR_START_DEPTH("Starting size of PIR chunks", 8);
