@@ -2,7 +2,6 @@ package me.hollasch.xray.render.multithreaded;
 
 import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
 
 /**
  * @author Connor Hollasch
@@ -10,12 +9,16 @@ import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
  */
 public class TileTracer implements Runnable {
 
-    @Getter private int xi, yi;
-    @Getter private int width, height;
+    @Getter
+    private int xi, yi;
+    @Getter
+    private int width, height;
 
-    @Getter private final MultithreadedRenderer renderer;
+    @Getter
+    private final MultithreadedRenderer renderer;
 
-    @Getter private boolean rendering = false;
+    @Getter
+    private boolean rendering = false;
 
     public TileTracer(final MultithreadedRenderer renderer, final int xi, final int yi, final int width, final int height) {
         this.renderer = renderer;
@@ -34,7 +37,7 @@ public class TileTracer implements Runnable {
             for (int x = 0; x < width; ++x) {
                 for (int y = 0; y < height; ++y) {
                     Vec3 current = this.renderer.getPixelAtInstant(xi + x, yi + y);
-                    current = current == null ? Vec3.of(0f, 0f, 0f) : current;
+                    current = current == null ? new Vec3() : current;
                     this.renderer.setPixelAtInstant(xi + x, yi + y, sample, current.add(this.renderer.getColorAt(x + xi, y + yi)));
                 }
             }

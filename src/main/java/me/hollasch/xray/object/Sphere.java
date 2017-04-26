@@ -15,23 +15,29 @@ import me.hollasch.xray.render.RayCollision;
 public class Sphere extends WorldObject {
 
     @Getter private Vec3 origin;
-    @Getter private float radius;
+    @Getter private double radius;
+    private AABB boundingBox;
 
-    public Sphere(Vec3 origin, float radius, Material material) {
+    public Sphere(Vec3 origin, double radius, Material material) {
         this.origin = origin;
         this.radius = radius;
         this.material = material;
+
+        Vec3 min = Vec3.of(origin.getX() - radius, origin.getY() - radius, origin.getZ() - radius);
+        Vec3 max = Vec3.of(origin.getX() + radius, origin.getY() + radius, origin.getZ() + radius);
+
+        this.boundingBox = new AABB(min, max, material);
     }
 
-    public RayCollision rayIntersect(Ray ray, float tMin, float tMax) {
+    public RayCollision rayIntersect(Ray ray, double tMin, double tMax) {
         Vec3 delta = ray.getOrigin().subtract(this.origin);
-        float a = ray.getDirection().dot(ray.getDirection());
-        float b = delta.dot(ray.getDirection());
-        float c = delta.dot(delta) - (this.radius * this.radius);
-        float discriminant = (b * b) - (a * c);
+        double a = ray.getDirection().dot(ray.getDirection());
+        double b = delta.dot(ray.getDirection());
+        double c = delta.dot(delta) - (this.radius * this.radius);
+        double discriminant = (b * b) - (a * c);
 
         if (discriminant > 0) {
-            float t = (float) ((-b - Math.sqrt(b * b - a * c)) / a);
+            double t = (-b - Math.sqrt(b * b - a * c)) / a;
 
             if (t < tMax && t > tMin) {
                 return new RayCollision(
@@ -42,7 +48,7 @@ public class Sphere extends WorldObject {
                 );
             }
 
-            t = (float) ((-b + Math.sqrt(b * b - a * c)) / a);
+            t = (-b + Math.sqrt(b * b - a * c)) / a;
 
             if (t < tMax && t > tMin) {
                 return new RayCollision(
@@ -55,5 +61,10 @@ public class Sphere extends WorldObject {
         }
 
         return null;
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        return this.boundingBox;
     }
 }

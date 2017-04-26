@@ -20,17 +20,12 @@ public class Diffuse extends Material {
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
-        Vec3 rnd = MathUtil.bakedRandomInUnitSphere();
-        float dot = rnd.dot(collision.getNormal());
+        Vec3 target = collision.getPoint().add(collision.getNormal()).add(Vec3.randomInUnitSphere());
 
-        Vec3 target;
-        if (dot < 0) {
-            target = collision.getNormal().add(rnd.negate());
-        } else {
-            target = collision.getNormal().add(rnd);
-        }
-
-        Ray scattered = new Ray(collision.getPoint(), target);
+        Ray scattered = new Ray(
+                collision.getPoint(),
+                target.subtract(collision.getPoint())
+        );
         return new SurfaceInteraction(this.albedo.getRGBAt(collision.getPoint()), scattered);
     }
 }

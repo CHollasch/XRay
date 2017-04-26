@@ -8,5 +8,5 @@ import me.hollasch.xray.render.Ray;
  */
 public interface Camera {
 
-    Ray projectRay(float x, float y);
+    Ray projectRay(double x, double y);
 }

@@ -17,7 +17,7 @@ public class Ray {
         this.direction = direction;
     }
 
-    public Vec3 getPointAt(float t) {
+    public Vec3 getPointAt(double t) {
         return origin.add(direction.multiplyScalar(t));
     }
 }

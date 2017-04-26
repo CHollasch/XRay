@@ -2,7 +2,6 @@ package me.hollasch.xray.render;
 
 import lombok.Getter;
 import me.hollasch.xray.render.multithreaded.TileDirection;
-import me.hollasch.xray.render.multithreaded.TileTracer;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -11,7 +10,7 @@ import java.util.Map;
  * @author Connor Hollasch
  * @since Feb 24, 6:59 PM
  */
-public enum RenderProperties {
+public enum Integrator {
 
     THREAD_COUNT("Amount of threads for multi-core processing", Runtime.getRuntime().availableProcessors()),
     TILE_SIZE_X("Size of each render tile in the x direction", 32),
@@ -19,10 +18,10 @@ public enum RenderProperties {
     TILE_DIRECTION("Which direction to sample tiles in", TileDirection.CENTER),
 
     SAMPLE_COUNT("Amount of samples per pixel", 32),
-    BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0f),
+    BLUR_FACTOR("Spread of the samples across multiple pixels", 1.0),
 
-    T_MIN("Minimum t-value for ray cutoff", 0.001f),
-    T_MAX("Maximum t-value for ray cutoff", Float.MAX_VALUE),
+    T_MIN("Minimum t-value for ray cutoff", 0.001),
+    T_MAX("Maximum t-value for ray cutoff", Double.MAX_VALUE),
 
     MAX_DEPTH("Maximum amount of bounces per ray", 12),
     PIR_START_DEPTH("Starting size of PIR chunks", 8);
@@ -30,7 +29,7 @@ public enum RenderProperties {
     @Getter private String description;
     @Getter private Object defaultValue;
 
-    RenderProperties(String description, Object defaultValue) {
+    Integrator(String description, Object defaultValue) {
         this.description = description;
         this.defaultValue = defaultValue;
     }
@@ -40,12 +39,12 @@ public enum RenderProperties {
     }
 
     public class Value<T> {
-        @Getter private RenderProperties containerProperty;
+        @Getter private Integrator containerProperty;
 
         @Getter private T assignedValue;
         @Getter private T defaultValue;
 
-        private Value(RenderProperties containerProperty, T value, T defaultValue) {
+        private Value(Integrator containerProperty, T value, T defaultValue) {
             this.containerProperty = containerProperty;
             this.assignedValue = value;
             this.defaultValue = defaultValue;
@@ -56,10 +55,10 @@ public enum RenderProperties {
         }
     }
 
-    public static Map<RenderProperties, Value<?>> buildPropertiesMap() {
-        Map<RenderProperties, Value<?>> renderProperties = new HashMap<RenderProperties, Value<?>>();
+    public static Map<Integrator, Value<?>> buildPropertiesMap() {
+        Map<Integrator, Value<?>> renderProperties = new HashMap<Integrator, Value<?>>();
 
-        for (RenderProperties property : values()) {
+        for (Integrator property : values()) {
             renderProperties.put(property, property.get(null));
         }
 

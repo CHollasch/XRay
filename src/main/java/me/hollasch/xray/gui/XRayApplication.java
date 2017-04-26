@@ -1,9 +1,8 @@
 package me.hollasch.xray.gui;
 
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.render.PIRRenderer;
 import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
-import me.hollasch.xray.render.RenderProperties;
+import me.hollasch.xray.render.Integrator;
 import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.render.multithreaded.TileDirection;
 import me.hollasch.xray.scene.Scene;
@@ -72,13 +71,13 @@ public class XRayApplication {
 
                 renderer = new MultithreadedRenderer(
                         scene,
-                        RenderProperties.SAMPLE_COUNT.get(700),
-                        RenderProperties.THREAD_COUNT.get(400),
-                        RenderProperties.TILE_SIZE_X.get(50),
-                        RenderProperties.TILE_SIZE_Y.get(50),
-                        RenderProperties.T_MIN.get(.01),
-                        RenderProperties.MAX_DEPTH.get(24),
-                        RenderProperties.TILE_DIRECTION.get(TileDirection.BOTTOM_TO_TOP)
+                        Integrator.SAMPLE_COUNT.get(700),
+                        Integrator.THREAD_COUNT.get(400),
+                        Integrator.TILE_SIZE_X.get(50),
+                        Integrator.TILE_SIZE_Y.get(50),
+                        Integrator.T_MIN.get(.01),
+                        Integrator.MAX_DEPTH.get(24),
+                        Integrator.TILE_DIRECTION.get(TileDirection.BOTTOM_TO_TOP)
                 );
 
                 renderer.registerProgressListener(new MultithreadedRenderer.Listener() {

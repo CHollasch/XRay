@@ -14,9 +14,9 @@ public abstract class Light {
 
     @Getter private Vec3 lightLocation;
     @Getter private Vec3 lightColor;
-    @Getter private float intensity;
+    @Getter private double intensity;
 
-    public Light(Vec3 lightLocation, Vec3 lightColor, float intensity) {
+    public Light(Vec3 lightLocation, Vec3 lightColor, double intensity) {
         this.lightLocation = lightLocation;
         this.lightColor = lightColor;
         this.intensity = intensity;

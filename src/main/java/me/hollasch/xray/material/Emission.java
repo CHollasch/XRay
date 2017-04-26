@@ -13,14 +13,15 @@ import me.hollasch.xray.render.RayCollision;
 public class Emission extends Material {
 
     @Getter private SurfaceTexture emissionColor;
+    @Getter private double intensity = 1d;
 
-    public Emission(SurfaceTexture emissionColor) {
+    public Emission(SurfaceTexture emissionColor, double intensity) {
         this.emissionColor = emissionColor;
+        this.intensity = intensity;
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
-        SurfaceInteraction interaction = new SurfaceInteraction(emissionColor.getRGBAt(collision.getPoint()), null);
-        interaction.setEmissive(true);
-        return interaction;
+        double distance = Vec3.distanceBetween(incoming.getOrigin(), collision.getPoint());
+        return new SurfaceInteraction(this.emissionColor.getRGBAt(collision.getPoint()).multiplyScalar(distance * this.intensity), null);
     }
 }

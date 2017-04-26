@@ -10,6 +10,7 @@
 
 package me.hollasch.xray.object.surface;
 
+import me.hollasch.xray.object.AABB;
 import me.hollasch.xray.object.WorldObject;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
@@ -35,9 +36,9 @@ public class Mesh extends WorldObject {
     }
 
     @Override
-    public RayCollision rayIntersect(Ray ray, float tMin, float tMax) {
+    public RayCollision rayIntersect(Ray ray, double tMin, double tMax) {
         RayCollision currentRecord = null;
-        float closestCollision = tMax;
+        double closestCollision = tMax;
 
         for (WorldObject object : this.surfaces) {
             RayCollision possibleRecord = object.rayIntersect(ray, tMin, closestCollision);
@@ -49,5 +50,10 @@ public class Mesh extends WorldObject {
         }
 
         return currentRecord;
+    }
+
+    @Override
+    public AABB getBoundingBox() {
+        return null;
     }
 }

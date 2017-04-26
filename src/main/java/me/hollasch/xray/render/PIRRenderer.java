@@ -28,24 +28,24 @@ public class PIRRenderer extends Renderer {
     // CONSTRUCTORS
     //==============================================================================================
 
-    public PIRRenderer(final Scene scene, final RenderProperties.Value<?>... renderProps) {
+    public PIRRenderer(final Scene scene, final Integrator.Value<?>... renderProps) {
         super(scene);
 
         // Build properties map.
-        Map<RenderProperties, RenderProperties.Value<?>> propertyMap = RenderProperties.buildPropertiesMap();
-        for (RenderProperties.Value<?> renderProperty : renderProps) {
+        Map<Integrator, Integrator.Value<?>> propertyMap = Integrator.buildPropertiesMap();
+        for (Integrator.Value<?> renderProperty : renderProps) {
             propertyMap.put(renderProperty.getContainerProperty(), renderProperty);
         }
 
-        this.startLevel = (Integer) propertyMap.get(RenderProperties.PIR_START_DEPTH).get();
-        this.samples = (Integer) propertyMap.get(RenderProperties.SAMPLE_COUNT).get();
+        this.startLevel = (Integer) propertyMap.get(Integrator.PIR_START_DEPTH).get();
+        this.samples = (Integer) propertyMap.get(Integrator.SAMPLE_COUNT).get();
 
         // Initialize renderer properties.
 
-        this.blurFactor = (Float) propertyMap.get(RenderProperties.BLUR_FACTOR).get();
-        this.tMin = (Float) propertyMap.get(RenderProperties.T_MIN).get();
-        this.tMax = (Float) propertyMap.get(RenderProperties.T_MAX).get();
-        this.maxDepth = (Integer) propertyMap.get(RenderProperties.MAX_DEPTH).get();
+        this.blurFactor = (Double) propertyMap.get(Integrator.BLUR_FACTOR).get();
+        this.tMin = (Double) propertyMap.get(Integrator.T_MIN).get();
+        this.tMax = (Double) propertyMap.get(Integrator.T_MAX).get();
+        this.maxDepth = (Integer) propertyMap.get(Integrator.MAX_DEPTH).get();
     }
 
     //==============================================================================================
@@ -63,7 +63,7 @@ public class PIRRenderer extends Renderer {
                 PIRRenderer.this.renderData = new Vec3[width][height];
 
                 int samples;
-                float size, size2;
+                double size, size2;
                 int iX, iY;
 
                 size = 1 << startLevel;
@@ -129,8 +129,8 @@ public class PIRRenderer extends Renderer {
     // PRIVATE HELPER METHODS
     //==============================================================================================
 
-    private Vec3 getColorWithSamples(float x, float y, int samples) {
-        Vec3 color = Vec3.of(0f, 0f, 0f);
+    private Vec3 getColorWithSamples(double x, double y, int samples) {
+        Vec3 color = new Vec3();
 
         for (int i = 0; i < samples; ++i) {
             color = color.add(getColorAt(x, y).divideScalar(samples));

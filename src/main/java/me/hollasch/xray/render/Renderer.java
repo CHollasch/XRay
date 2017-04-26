@@ -40,10 +40,14 @@ public abstract class Renderer {
 
     // Ray management
 
-    @Getter protected float tMin;
-    @Getter protected float tMax;
-    @Getter protected int maxDepth;
-    @Getter protected float blurFactor;
+    @Getter
+    protected double tMin;
+    @Getter
+    protected double tMax;
+    @Getter
+    protected int maxDepth;
+    @Getter
+    protected double blurFactor;
 
     //==============================================================================================
     // CONSTRUCTORS
@@ -62,20 +66,20 @@ public abstract class Renderer {
         this.progressListeners.add(onProgress);
     }
 
-    public Vec3 getColorAt(float x, float y) {
+    public Vec3 getColorAt(double x, double y) {
         Vec3 totalColor;
 
-        float u = (float) (x + (Math.random() * this.blurFactor)) / this.getScene().getScreenWidth();
-        float v = (float) (y + (Math.random() * this.blurFactor)) / this.getScene().getScreenHeight();
+        double u = (x + (Math.random() * this.blurFactor)) / this.getScene().getScreenWidth();
+        double v = (y + (Math.random() * this.blurFactor)) / this.getScene().getScreenHeight();
 
         Ray ray = this.getScene().getCameraObject().projectRay(u, v);
         totalColor = this.getColorAt(ray, 0);
 
         // Gamma correction.
         totalColor = Vec3.of(
-                (float) Math.sqrt(totalColor.getX()),
-                (float) Math.sqrt(totalColor.getY()),
-                (float) Math.sqrt(totalColor.getZ())
+                Math.sqrt(totalColor.getX()),
+                Math.sqrt(totalColor.getY()),
+                Math.sqrt(totalColor.getZ())
         );
 
         return totalColor;
@@ -106,7 +110,7 @@ public abstract class Renderer {
 
                 return fromLights.add(surfaceInteraction.getLightContribution().multiply(getColorAt(surfaceInteraction.getScattered(), depth + 1)));
             } else {
-                return Vec3.of(0, 0, 0);
+                return new Vec3();
             }
         } else {
             return this.scene.getBackground().getRGBAt(ray.getDirection());
@@ -119,14 +123,17 @@ public abstract class Renderer {
         }
 
         RayCollision currentRecord = null;
-        float closestCollision = this.tMax;
+        double closestCollision = this.tMax;
 
         for (WorldObject object : this.scene.getSceneObjects()) {
-            RayCollision possibleRecord = object.rayIntersect(ray, tMin, closestCollision);
+            // Do bounding box check first for speed
+            if (object.getBoundingBox().doesIntersect(ray)) {
+                RayCollision possibleRecord = object.rayIntersect(ray, tMin, closestCollision);
 
-            if (possibleRecord != null) {
-                closestCollision = possibleRecord.getTValue();
-                currentRecord = possibleRecord;
+                if (possibleRecord != null) {
+                    closestCollision = possibleRecord.getTValue();
+                    currentRecord = possibleRecord;
+                }
             }
         }
 

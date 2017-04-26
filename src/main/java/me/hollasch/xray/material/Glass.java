@@ -1,9 +1,6 @@
 package me.hollasch.xray.material;
 
 import lombok.Getter;
-import me.hollasch.xray.material.Material;
-import me.hollasch.xray.material.SurfaceInteraction;
-import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
@@ -15,33 +12,35 @@ import me.hollasch.xray.render.RayCollision;
  */
 public class Glass extends Material {
 
-    @Getter private float ior;
+    @Getter
+    private double ior;
 
-    public Glass(SurfaceTexture shading, float ior) {
-        setSurfaceTexture(shading);
+    public Glass(double ior) {
         this.ior = ior;
     }
 
-    public Glass(float ior) {
-        this(new SingleColorTexture(Vec3.of(1, 1, 1)), ior);
+    public Glass(double ior, SurfaceTexture color) {
+        this.ior = ior;
+        setSurfaceTexture(color);
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
         Vec3 outwardNormal;
         Vec3 reflected = reflect(incoming.getDirection(), collision.getNormal());
 
-        float n;
-        Vec3 attenuation = Vec3.of(1.0f, 1.0f, 1.0f);
-        float reflective_probability;
-        float cosine;
+        double n;
+        Vec3 attenuation = Vec3.of(1.0);
+        double reflective_probability;
+        double cosine;
 
         if (incoming.getDirection().dot(collision.getNormal()) > 0) {
             outwardNormal = collision.getNormal().negate();
             n = this.ior;
-            cosine = this.ior * incoming.getDirection().dot(collision.getNormal()) / incoming.getDirection().length();
+            cosine = incoming.getDirection().dot(collision.getNormal()) / incoming.getDirection().length();
+            cosine = Math.sqrt(1 - this.ior * this.ior * (1 - cosine * cosine));
         } else {
             outwardNormal = collision.getNormal();
-            n = 1.0f / this.ior;
+            n = 1.0 / this.ior;
             cosine = -incoming.getDirection().dot(collision.getNormal()) / incoming.getDirection().length();
         }
 
@@ -51,7 +50,7 @@ public class Glass extends Material {
         if (refraction != null) {
             reflective_probability = schlick(cosine, this.ior);
         } else {
-            reflective_probability = 1.0f;
+            reflective_probability = 1.0;
         }
 
         if (Math.random() < reflective_probability) {
@@ -60,12 +59,16 @@ public class Glass extends Material {
             scattered = new Ray(collision.getPoint(), refraction);
         }
 
-        return new SurfaceInteraction(attenuation.add(getSurfaceTexture().getRGBAt(collision.getPoint())), scattered);
+        if (getSurfaceTexture() != null) {
+            attenuation = attenuation.multiply(getSurfaceTexture().getRGBAt(scattered.getOrigin()));
+        }
+
+        return new SurfaceInteraction(attenuation, scattered);
     }
 
-    private float schlick(float cosine, float refractive_index) {
-        float r0 = (1 - refractive_index) / (1 + refractive_index);
+    private double schlick(double cosine, double refractive_index) {
+        double r0 = (1 - refractive_index) / (1 + refractive_index);
         r0 = r0 * r0;
-        return (float) (r0 + (1 - r0) * Math.pow((1 - cosine), 5));
+        return r0 + (1 - r0) * Math.pow((1 - cosine), 5);
     }
 }

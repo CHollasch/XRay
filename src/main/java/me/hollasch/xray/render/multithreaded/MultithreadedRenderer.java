@@ -2,7 +2,7 @@ package me.hollasch.xray.render.multithreaded;
 
 import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.render.RenderProperties;
+import me.hollasch.xray.render.Integrator;
 import me.hollasch.xray.render.Renderer;
 import me.hollasch.xray.scene.Scene;
 
@@ -33,7 +33,7 @@ public class MultithreadedRenderer extends Renderer {
     private long samplesLeft;
 
     @Getter
-    private float percentageComplete;
+    private double percentageComplete;
 
     @Getter
     private final Set<TileTracer> tracersLeft;
@@ -61,16 +61,16 @@ public class MultithreadedRenderer extends Renderer {
     // CONSTRUCTORS
     //==============================================================================================
 
-    public MultithreadedRenderer(final Scene scene, final RenderProperties.Value<?>... renderProps) {
+    public MultithreadedRenderer(final Scene scene, final Integrator.Value<?>... renderProps) {
         super(scene);
 
         // Build properties map.
-        Map<RenderProperties, RenderProperties.Value<?>> propertyMap = RenderProperties.buildPropertiesMap();
-        for (RenderProperties.Value<?> renderProperty : renderProps) {
+        Map<Integrator, Integrator.Value<?>> propertyMap = Integrator.buildPropertiesMap();
+        for (Integrator.Value<?> renderProperty : renderProps) {
             propertyMap.put(renderProperty.getContainerProperty(), renderProperty);
         }
 
-        this.threadCount = (Integer) propertyMap.get(RenderProperties.THREAD_COUNT).get();
+        this.threadCount = (Integer) propertyMap.get(Integrator.THREAD_COUNT).get();
         int availableProcessors = Runtime.getRuntime().availableProcessors();
 
         if (this.threadCount <= 0 || threadCount > availableProcessors) {
@@ -78,20 +78,20 @@ public class MultithreadedRenderer extends Renderer {
         }
 
         this.threadPool = Executors.newFixedThreadPool(this.threadCount);
-        this.tileSizeX = Math.min((Integer) propertyMap.get(RenderProperties.TILE_SIZE_X).get(), this.scene.getScreenWidth());
-        this.tileSizeY = Math.min((Integer) propertyMap.get(RenderProperties.TILE_SIZE_Y).get(), this.scene.getScreenHeight());
-        this.tileDirection = (TileDirection) propertyMap.get(RenderProperties.TILE_DIRECTION).get();
+        this.tileSizeX = Math.min((Integer) propertyMap.get(Integrator.TILE_SIZE_X).get(), this.scene.getScreenWidth());
+        this.tileSizeY = Math.min((Integer) propertyMap.get(Integrator.TILE_SIZE_Y).get(), this.scene.getScreenHeight());
+        this.tileDirection = (TileDirection) propertyMap.get(Integrator.TILE_DIRECTION).get();
 
         this.tracersLeft = new HashSet<>();
 
-        this.samples = (Integer) propertyMap.get(RenderProperties.SAMPLE_COUNT).get();
+        this.samples = (Integer) propertyMap.get(Integrator.SAMPLE_COUNT).get();
 
         // Initialize renderer properties.
 
-        this.blurFactor = (Float) propertyMap.get(RenderProperties.BLUR_FACTOR).get();
-        this.tMin = (Float) propertyMap.get(RenderProperties.T_MIN).get();
-        this.tMax = (Float) propertyMap.get(RenderProperties.T_MAX).get();
-        this.maxDepth = (Integer) propertyMap.get(RenderProperties.MAX_DEPTH).get();
+        this.blurFactor = (Double) propertyMap.get(Integrator.BLUR_FACTOR).get();
+        this.tMin = (Double) propertyMap.get(Integrator.T_MIN).get();
+        this.tMax = (Double) propertyMap.get(Integrator.T_MAX).get();
+        this.maxDepth = (Integer) propertyMap.get(Integrator.MAX_DEPTH).get();
     }
 
     //==============================================================================================
@@ -130,10 +130,10 @@ public class MultithreadedRenderer extends Renderer {
     //==============================================================================================
 
     public static final BufferedImage renderToImage(Scene scene) {
-        return MultithreadedRenderer.renderToImage(scene, new RenderProperties.Value[0]);
+        return MultithreadedRenderer.renderToImage(scene, new Integrator.Value[0]);
     }
 
-    public static final BufferedImage renderToImage(Scene scene, RenderProperties.Value<?>... renderProperties) {
+    public static final BufferedImage renderToImage(Scene scene, Integrator.Value<?>... renderProperties) {
         MultithreadedRenderer render = new MultithreadedRenderer(scene, renderProperties);
         render.render();
         return render.writeToImage();
@@ -150,7 +150,7 @@ public class MultithreadedRenderer extends Renderer {
 
         // Compute render statistics.
         --this.samplesLeft;
-        this.percentageComplete = (int) ((1f - ((float) this.samplesLeft / this.samplesNeeded)) * 100f);
+        this.percentageComplete = (int) ((1 - (this.samplesLeft / this.samplesNeeded)) * 100);
 
         // For speed purposes, we will assume there is no error during render writes as each pixel is rendered
         // individually on multiple threads, so there is very little chance we modify the same value in this

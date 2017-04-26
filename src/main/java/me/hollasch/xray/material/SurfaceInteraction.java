@@ -25,4 +25,10 @@ public class SurfaceInteraction {
         this.lightContribution = attenuation;
         this.scattered = scattered;
     }
+
+    public SurfaceInteraction(final Vec3 attenuation, final Ray scattered, boolean isEmissive) {
+        this.lightContribution = attenuation;
+        this.scattered = scattered;
+        this.isEmissive = isEmissive;
+    }
 }

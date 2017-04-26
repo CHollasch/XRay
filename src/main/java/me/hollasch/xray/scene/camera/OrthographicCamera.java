@@ -17,7 +17,7 @@ public class OrthographicCamera implements Camera {
 
     private Vec3 u, v, w;
 
-    public OrthographicCamera(final Vec3 origin, final Vec3 lookAt, final Vec3 up, final float width, final float height) {
+    public OrthographicCamera(final Vec3 origin, final Vec3 lookAt, final Vec3 up, final double width, final double height) {
         this.origin = origin;
 
         this.w = origin.subtract(lookAt).normalize();
@@ -29,7 +29,12 @@ public class OrthographicCamera implements Camera {
         this.cols = this.u.multiplyScalar(height);
     }
 
-    public Ray projectRay(float x, float y) {
-        return new Ray(this.lowerLeftCorner.add(this.rows.multiplyScalar(y)).add(this.cols.multiplyScalar(x)), this.w.negate());
+    public Ray projectRay(double x, double y) {
+        return new Ray(
+                this.lowerLeftCorner
+                        .add(this.rows.multiplyScalar(y))
+                        .add(this.cols.multiplyScalar(x)),
+                this.w.negate()
+        );
     }
 }

@@ -5,9 +5,9 @@ import me.hollasch.xray.material.*;
 import me.hollasch.xray.material.texture.SingleColorTexture;
 import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.object.Quad;
 import me.hollasch.xray.object.Sphere;
 import me.hollasch.xray.object.WorldObject;
+import me.hollasch.xray.object.surface.Quad;
 import me.hollasch.xray.scene.Scene;
 import me.hollasch.xray.scene.camera.PerspectiveCamera;
 

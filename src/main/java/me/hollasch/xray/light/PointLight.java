@@ -23,10 +23,10 @@ public class PointLight extends Light {
         RayCollision obstructing = renderer.findObjectCollision(lightRay);
 
         if (obstructing != null) {
-            return Vec3.of(0f, 0f, 0f);
+            return new Vec3();
         }
 
-        float attenuation = 1.0f / getLightLocation().subtract(objectCollision.getPoint()).length();
+        double attenuation = 1.0 / getLightLocation().subtract(objectCollision.getPoint()).length();
         return getLightColor().multiplyScalar(attenuation).multiplyScalar(getIntensity());
     }
 }
