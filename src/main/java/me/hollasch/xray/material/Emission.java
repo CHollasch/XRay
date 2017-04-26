@@ -22,6 +22,6 @@ public class Emission extends Material {
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
         double distance = Vec3.distanceBetween(incoming.getOrigin(), collision.getPoint());
-        return new SurfaceInteraction(this.emissionColor.getRGBAt(collision.getPoint()).multiplyScalar(distance * this.intensity), null);
+        return new SurfaceInteraction(this.emissionColor.getRGBAt(collision.getPoint()).multiplyScalar(distance * this.intensity), null, true);
     }
 }

@@ -1,10 +1,12 @@
 package me.hollasch.xray.gui;
 
+import me.hollasch.xray.math.Vec2;
 import me.hollasch.xray.math.Vec3;
-import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
+import me.hollasch.xray.render.RaySampler;
+import me.hollasch.xray.render.engine.multithreaded.MultithreadedRenderer;
 import me.hollasch.xray.render.Integrator;
-import me.hollasch.xray.render.Renderer;
-import me.hollasch.xray.render.multithreaded.TileDirection;
+import me.hollasch.xray.render.engine.Renderer;
+import me.hollasch.xray.render.engine.multithreaded.TileDirection;
 import me.hollasch.xray.scene.Scene;
 
 import javax.imageio.ImageIO;
@@ -43,7 +45,7 @@ public class XRayApplication {
                     Vec3 color = pixelData[i][j];
 
                     if (color == null) {
-                        g.setColor(Color.black);
+                        g.setColor(new Color(doChecker(Vec2.of(i, j)).toRGB()));
                     } else {
                         int rgb = color.toRGB();
                         g.setColor(new Color(rgb));
@@ -52,6 +54,16 @@ public class XRayApplication {
                     g.drawLine(i, j, i, j);
                 }
             }
+        }
+
+        private Vec3 doChecker(Vec2 c) {
+            c = c.divideScalar(10);
+
+            if ((Math.floor(c.getX()) + Math.floor(c.getY())) % 2 == 0) {
+                return Vec3.of(.275);
+            }
+
+            return Vec3.of(.2);
         }
     };
 
@@ -71,8 +83,8 @@ public class XRayApplication {
 
                 renderer = new MultithreadedRenderer(
                         scene,
-                        Integrator.SAMPLE_COUNT.get(700),
-                        Integrator.THREAD_COUNT.get(400),
+                        Integrator.SAMPLE_COUNT.get(8192),
+                        Integrator.RAY_SAMPLER.get(RaySampler.RANDOM),
                         Integrator.TILE_SIZE_X.get(50),
                         Integrator.TILE_SIZE_Y.get(50),
                         Integrator.T_MIN.get(.01),

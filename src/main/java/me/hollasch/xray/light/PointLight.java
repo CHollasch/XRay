@@ -3,7 +3,7 @@ package me.hollasch.xray.light;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
-import me.hollasch.xray.render.Renderer;
+import me.hollasch.xray.render.engine.Renderer;
 
 /**
  * @author Connor Hollasch

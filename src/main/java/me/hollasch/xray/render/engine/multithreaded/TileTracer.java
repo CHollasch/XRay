@@ -1,4 +1,4 @@
-package me.hollasch.xray.render.multithreaded;
+package me.hollasch.xray.render.engine.multithreaded;
 
 import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
@@ -40,6 +40,14 @@ public class TileTracer implements Runnable {
                     current = current == null ? new Vec3() : current;
                     this.renderer.setPixelAtInstant(xi + x, yi + y, sample, current.add(this.renderer.getColorAt(x + xi, y + yi)));
                 }
+            }
+        }
+
+        // Cleanup tile render data for sample distribution
+        for (int x = 0; x < width; ++x) {
+            for (int y = 0; y < height; ++y) {
+                Vec3 current = this.renderer.getPixelAtInstant(xi + x, yi + y);
+                this.renderer.setPixelAtInstant(xi + x, yi + y, current.divideScalar(this.renderer.samples));
             }
         }
 

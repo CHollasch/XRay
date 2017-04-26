@@ -67,10 +67,8 @@ public class DemoScene extends Scene {
                 v(0, .8, 2),
                 v(0, .5, 0),
                 v(0, 1, 0),
-                90,
-                getScreenWidth() / getScreenHeight(),
-                .075,
-                2
+                85,
+                getScreenWidth() / getScreenHeight()
         );
 
         setCameraObject(camera);
@@ -85,6 +83,14 @@ public class DemoScene extends Scene {
                 //add(new Quad(a, b, c, d, diffuseWhite));
             }
         }
+
+        /*add(new Quad(
+                v(-.5, 2, -.5),
+                v(-.5, 2, 0),
+                v(.5, 2, -.5),
+                v(.5, 2, 0),
+                new Emission(new SingleColorTexture(Vec3.of(.8, .1, .3)), 30))
+        );*/
 
         add(new Quad(
                 v(-2.5, 3, 0),
@@ -102,13 +108,7 @@ public class DemoScene extends Scene {
                 new Emission(new SingleColorTexture(Vec3.of(.2, .8, .3)), 30))
         );
 
-        //add(new AABB(Vec3.of(-1, 0, -1), Vec3.of(1, 2, 2), new Diffuse(new SingleColorTexture(v(.7, .1, .2)))));
-        //add(new Quad(v(-100, 0, 100), v(100, 0, 100), v(-100, 0, -100), v(100, 0, -100), new Diffuse(new SingleColorTexture(v(.9, .9, .9)))));
         add(new Sphere(v(0, -500, 0), 500, new Diffuse(new SingleColorTexture(Vec3.of(.9)))));
-        //add(new Sphere(v(-.25, .5, 0), .5, new Diffuse(new SingleColorTexture(v(0, .3, .7)))));
-        //add(new Sphere(v(.6, .25, .7), .25, new Glossy(new SingleColorTexture(v(.1, .5, .3)), 0.01)));
-        //add(new Sphere(v(.1, .35, 1.1), .35, new Glass(1.33)));
-        //add(new Sphere(v(.1, .345, 1.1), .34, new Glass(.9)));
 
         for (int i = 0; i < 100; ++i) {
             double xR = Math.random() * 2;

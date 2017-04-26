@@ -128,6 +128,23 @@ public class Vec3 {
         );
     }
 
+    public final Vec3 abs() {
+        return Vec3.of(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+    }
+
+    public final int maxDimensionIndex() {
+        return (this.x > this.y) ? ((this.x > this.z) ? 0 : 2) : ((this.y > this.z) ? 1 : 2);
+    }
+
+    public final double maxComponent() {
+        return (this.x > this.y) ? ((this.x > this.z) ? this.x : this.z) : ((this.y > this.z) ? this.y : this.z);
+    }
+
+    public final Vec3 permute(int xL, int yL, int zL) {
+        double[] dim = {this.x, this.y, this.z};
+        return Vec3.of(dim[xL], dim[yL], dim[zL]);
+    }
+
     public final int toRGB() {
         return this.toRGBA(1.0);
     }

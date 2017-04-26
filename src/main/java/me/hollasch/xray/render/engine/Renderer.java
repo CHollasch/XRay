@@ -1,4 +1,4 @@
-package me.hollasch.xray.render;
+package me.hollasch.xray.render.engine;
 
 import lombok.AccessLevel;
 import lombok.Getter;
@@ -6,9 +6,13 @@ import lombok.Setter;
 import me.hollasch.xray.light.Light;
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
+import me.hollasch.xray.math.Vec2;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.object.WorldObject;
-import me.hollasch.xray.render.multithreaded.MultithreadedRenderer;
+import me.hollasch.xray.render.Ray;
+import me.hollasch.xray.render.RayCollision;
+import me.hollasch.xray.render.RaySampler;
+import me.hollasch.xray.render.engine.multithreaded.MultithreadedRenderer;
 import me.hollasch.xray.scene.Scene;
 
 import java.awt.image.BufferedImage;
@@ -42,12 +46,21 @@ public abstract class Renderer {
 
     @Getter
     protected double tMin;
+
     @Getter
     protected double tMax;
+
     @Getter
     protected int maxDepth;
+
     @Getter
     protected double blurFactor;
+
+    @Getter
+    protected RaySampler samplingMethod;
+
+    // Helper variable used for sampling methods
+    private volatile int rayNo = 0;
 
     //==============================================================================================
     // CONSTRUCTORS
@@ -69,8 +82,10 @@ public abstract class Renderer {
     public Vec3 getColorAt(double x, double y) {
         Vec3 totalColor;
 
-        double u = (x + (Math.random() * this.blurFactor)) / this.getScene().getScreenWidth();
-        double v = (y + (Math.random() * this.blurFactor)) / this.getScene().getScreenHeight();
+        Vec2 sampleOffset = this.samplingMethod.generateSampleOffset(this.rayNo++);
+
+        double u = (x + (sampleOffset.getX() * this.blurFactor)) / this.getScene().getScreenWidth();
+        double v = (y + (sampleOffset.getY() * this.blurFactor)) / this.getScene().getScreenHeight();
 
         Ray ray = this.getScene().getCameraObject().projectRay(u, v);
         totalColor = this.getColorAt(ray, 0);
@@ -126,14 +141,11 @@ public abstract class Renderer {
         double closestCollision = this.tMax;
 
         for (WorldObject object : this.scene.getSceneObjects()) {
-            // Do bounding box check first for speed
-            if (object.getBoundingBox().doesIntersect(ray)) {
-                RayCollision possibleRecord = object.rayIntersect(ray, tMin, closestCollision);
+            RayCollision possibleRecord = object.rayIntersect(ray, tMin, closestCollision);
 
-                if (possibleRecord != null) {
-                    closestCollision = possibleRecord.getTValue();
-                    currentRecord = possibleRecord;
-                }
+            if (possibleRecord != null) {
+                closestCollision = possibleRecord.getTValue();
+                currentRecord = possibleRecord;
             }
         }
 

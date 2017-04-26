@@ -1,4 +1,4 @@
-package me.hollasch.xray.render.multithreaded;
+package me.hollasch.xray.render.engine.multithreaded;
 
 import java.util.ArrayList;
 import java.util.Collections;

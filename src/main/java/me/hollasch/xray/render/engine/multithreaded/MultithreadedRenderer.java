@@ -1,9 +1,10 @@
-package me.hollasch.xray.render.multithreaded;
+package me.hollasch.xray.render.engine.multithreaded;
 
 import lombok.Getter;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Integrator;
-import me.hollasch.xray.render.Renderer;
+import me.hollasch.xray.render.RaySampler;
+import me.hollasch.xray.render.engine.Renderer;
 import me.hollasch.xray.scene.Scene;
 
 import java.awt.image.BufferedImage;
@@ -85,6 +86,7 @@ public class MultithreadedRenderer extends Renderer {
         this.tracersLeft = new HashSet<>();
 
         this.samples = (Integer) propertyMap.get(Integrator.SAMPLE_COUNT).get();
+        this.samplingMethod = (RaySampler) propertyMap.get(Integrator.RAY_SAMPLER).get();
 
         // Initialize renderer properties.
 
@@ -92,6 +94,7 @@ public class MultithreadedRenderer extends Renderer {
         this.tMin = (Double) propertyMap.get(Integrator.T_MIN).get();
         this.tMax = (Double) propertyMap.get(Integrator.T_MAX).get();
         this.maxDepth = (Integer) propertyMap.get(Integrator.MAX_DEPTH).get();
+
     }
 
     //==============================================================================================
