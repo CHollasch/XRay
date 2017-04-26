@@ -114,6 +114,10 @@ public abstract class Renderer {
     }
 
     public RayCollision findObjectCollision(Ray ray) {
+        if (ray == null) {
+            return null;
+        }
+
         RayCollision currentRecord = null;
         float closestCollision = this.tMax;
 

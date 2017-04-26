@@ -1,14 +1,15 @@
-package me.hollasch.xray.object;
+package me.hollasch.xray.object.surface;
 
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.math.Vec3;
+import me.hollasch.xray.object.WorldObject;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
 
 /**
  * Created by Connor on 4/19/17.
  */
-public class Quad extends WorldObject {
+public class Quad extends Surface {
 
     private Triangle t1, t2;
 

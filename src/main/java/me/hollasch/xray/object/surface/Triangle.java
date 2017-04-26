@@ -1,4 +1,4 @@
-package me.hollasch.xray.object;
+package me.hollasch.xray.object.surface;
 
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
@@ -10,7 +10,7 @@ import me.hollasch.xray.render.RayCollision;
  * @author Connor Hollasch
  * @since Feb 27, 9:40 PM
  */
-public class Triangle extends WorldObject {
+public class Triangle extends Surface {
 
     private static final float EPSILON = 0.0001f;
 

@@ -1,6 +1,7 @@
 package me.hollasch.xray.material;
 
 import lombok.Getter;
+import lombok.Setter;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 
@@ -10,18 +11,18 @@ import me.hollasch.xray.render.Ray;
  */
 public class SurfaceInteraction {
 
-    @Getter private final Vec3 lightContribution;
-    @Getter private final Ray scattered;
+    @Getter
+    private final Vec3 lightContribution;
 
-    @Getter private final boolean isEmissive;
+    @Getter
+    private final Ray scattered;
+
+    @Getter
+    @Setter
+    private boolean isEmissive = false;
 
     public SurfaceInteraction(final Vec3 attenuation, final Ray scattered) {
-        this(attenuation, scattered, false);
-    }
-
-    public SurfaceInteraction(final Vec3 attenuation, final Ray scattered, boolean isEmissive) {
         this.lightContribution = attenuation;
         this.scattered = scattered;
-        this.isEmissive = isEmissive;
     }
 }

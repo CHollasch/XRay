@@ -3,6 +3,8 @@ package me.hollasch.xray.material;
 import lombok.Getter;
 import me.hollasch.xray.material.Material;
 import me.hollasch.xray.material.SurfaceInteraction;
+import me.hollasch.xray.material.texture.SingleColorTexture;
+import me.hollasch.xray.material.texture.SurfaceTexture;
 import me.hollasch.xray.math.Vec3;
 import me.hollasch.xray.render.Ray;
 import me.hollasch.xray.render.RayCollision;
@@ -15,8 +17,13 @@ public class Glass extends Material {
 
     @Getter private float ior;
 
-    public Glass(float ior) {
+    public Glass(SurfaceTexture shading, float ior) {
+        setSurfaceTexture(shading);
         this.ior = ior;
+    }
+
+    public Glass(float ior) {
+        this(new SingleColorTexture(Vec3.of(1, 1, 1)), ior);
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
@@ -53,7 +60,7 @@ public class Glass extends Material {
             scattered = new Ray(collision.getPoint(), refraction);
         }
 
-        return new SurfaceInteraction(attenuation, scattered);
+        return new SurfaceInteraction(attenuation.add(getSurfaceTexture().getRGBAt(collision.getPoint())), scattered);
     }
 
     private float schlick(float cosine, float refractive_index) {

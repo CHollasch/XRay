@@ -19,6 +19,8 @@ public class Emission extends Material {
     }
 
     public SurfaceInteraction scatter(Ray incoming, RayCollision collision) {
-        return new SurfaceInteraction(this.emissionColor.getRGBAt(collision.getPoint()), null, true);
+        SurfaceInteraction interaction = new SurfaceInteraction(emissionColor.getRGBAt(collision.getPoint()), null);
+        interaction.setEmissive(true);
+        return interaction;
     }
 }

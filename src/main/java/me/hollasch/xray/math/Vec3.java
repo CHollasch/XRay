@@ -110,6 +110,10 @@ public class Vec3 {
         return Vec3.of(-this.x, -this.y, -this.z);
     }
 
+    public Vec3 abs() {
+        return Vec3.of(Math.abs(this.x), Math.abs(this.y), Math.abs(this.z));
+    }
+
     public final Vec3 normalize() {
         float length = length();
         if (length > 0) {
@@ -120,10 +124,14 @@ public class Vec3 {
     }
     
     public final Vec3 clamp(float min, float max) {
+        float x = Math.abs(getX());
+        float y = Math.abs(getY());
+        float z = Math.abs(getZ());
+
         return Vec3.of(
-                min > getX() ? min : max < getX() ? max : getX(),
-                min > getY() ? min : max < getY() ? max : getY(),
-                min > getZ() ? min : max < getZ() ? max : getZ()
+                min > x ? min : max < x ? max : getX(),
+                min > y ? min : max < y ? max : getY(),
+                min > z ? min : max < z ? max : getZ()
         );
     }
 
